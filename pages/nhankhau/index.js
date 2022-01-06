@@ -10,33 +10,25 @@ export default function NhankhauPage() {
           <h1 className="text-xl">Danh sách nhân khẩu</h1>
         </div>
         <div className="">
-          <div className="grid grid-cols-8 gap-5 text-gray-500">
+          <div className="grid grid-cols-7 gap-5 text-gray-500">
             <h1>ID</h1>
             <h1>Họ tên</h1>
             <h1>Mã CMND/CCCD</h1>
             <h1>Giới tính</h1>
             <h1 className="col-span-3">Địa chỉ</h1>
-            <h1>Chỉnh sửa</h1>
           </div>
           {nhankhauFakes.map((item) => (
-            <div
-              className="grid grid-cols-8 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
+            <Link
+              href={`/nhankhau/${item.id}`}
+              className="grid grid-cols-7 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
-              <Link
-                href={`/nhankhau/${item.id}`}
-                className="hover:underline decoration-blue-700"
-              >
-                {item.id}
-              </Link>
+              <h1>{item.id}</h1>
               <h1>{item.name}</h1>
               <h1>{item.identityNumber}</h1>
               <h1>{item.gender}</h1>
               <h1 className="col-span-3">{item.address}</h1>
-              <Link href={`/nhankhau/${item.id}/edit`}>
-                <PencilIcon />
-              </Link>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

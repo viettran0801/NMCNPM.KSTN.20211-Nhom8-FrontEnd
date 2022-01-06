@@ -20,28 +20,18 @@ export default function HoKhauPage() {
           <div className="grid grid-cols-5 gap-5 text-gray-500">
             <h1>Mã hộ khẩu</h1>
             <h1>Chủ hộ</h1>
-            <h1 className="col-span-2">Địa chỉ</h1>
-            <h1>Chỉnh sửa</h1>
+            <h1 className="col-span-3">Địa chỉ</h1>
           </div>
           {hokhauFakes.map((item) => (
-            <div
+            <Link
+              href={`/hokhau/${item.id}`}
               className="grid grid-cols-5 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
-              <Link
-                href={`/hokhau/${item.id}`}
-                className="hover:underline decoration-blue-700"
-              >
-                {item.id}
-              </Link>
+              <h1>{item.id}</h1>
               <h1>{item.owner}</h1>
-              <h1 className="col-span-2">{item.addres}</h1>
-              <div className="flex space-x-3">
-                <Link href={`/hokhau/${item.id}/edit`}>
-                  <PencilIcon />
-                </Link>
-              </div>
-            </div>
+              <h1 className="col-span-3">{item.addres}</h1>
+            </Link>
           ))}
         </div>
       </div>
