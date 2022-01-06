@@ -53,7 +53,7 @@ export default function TamvangDetailpage() {
             <h1 className="text-gray-500">Lý do</h1>
             <h1>
               Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
+              industry. Lorem Ipsum has been the industrys standard dummy text
               ever since the 1500s,
             </h1>
           </div>
