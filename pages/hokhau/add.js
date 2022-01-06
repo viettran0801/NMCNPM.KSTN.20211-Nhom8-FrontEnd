@@ -1,6 +1,9 @@
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
-import { Form, Formik, Field, ErrorMessage } from "formik";
+import { Form, Formik } from "formik";
+import AddNhanKhau from "../../components/nhankhau/AddNhanKhauModel";
+import Input from "../../components/common/Input";
+import AddNhanKhauModel from "../../components/nhankhau/AddNhanKhauModel";
 
 export default function AddHoKhauPage() {
   return (
@@ -32,46 +35,10 @@ export default function AddHoKhauPage() {
           >
             {({ isSubmitting }) => (
               <Form className="grid grid-cols-2 gap-x-20 gap-y-10">
-                <div className="space-y-1">
-                  <label className="text-gray-500 text">Họ và tên chủ hộ</label>
-                  <Field
-                    type="text"
-                    name="name"
-                    className="w-full p-3 focus:outline-none rounded-lg focus:shadow-sm border"
-                  />
-                  <ErrorMessage
-                    name="name"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-gray-500 text">
-                    Số CMND/CCCD của chủ hộ
-                  </label>
-                  <Field
-                    type="text"
-                    name="identityNumber"
-                    className="w-full p-3 focus:outline-none rounded-lg focus:shadow-sm border"
-                  />
-                  <ErrorMessage
-                    name="identityNumber"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-                <div className="space-y-1 col-span-2">
-                  <label className="text-gray-500 text">Địa chỉ</label>
-                  <Field
-                    type="text"
-                    name="location"
-                    className="w-full p-3 focus:outline-none rounded-lg focus:shadow-sm border"
-                  />
-                  <ErrorMessage
-                    name="location"
-                    component="div"
-                    className="text-red-500"
-                  />
+                <Input label="Họ và tên chủ hộ" name="name" />
+                <Input label="Số CMND/CCCD của chủ hộ" name="identityNumber" />
+                <div className=" col-span-2">
+                  <Input label="Địa chỉ" name="location" />
                 </div>
                 <div>
                   <button
@@ -86,7 +53,50 @@ export default function AddHoKhauPage() {
             )}
           </Formik>
         </div>
+        <div className="space-y-10">
+          <div className="flex items-center space-x-20 pb-10 border-b">
+            <h1 className="text-xl">Danh sách thành viên</h1>
+          </div>
+          <div className="space-y-5 w-[600px]">
+            <div className="grid grid-cols-3 gap-10 text-gray-500">
+              <h1>Họ và tên</h1>
+              <h1>Ngày sinh</h1>
+              <h1>Quan hệ với chủ hộ</h1>
+            </div>
+            {thanhvienFakes.map((person) => (
+              <div className="grid grid-cols-3 gap-10">
+                <h1>{person.name}</h1>
+                <h1>{person.bod}</h1>
+                <h1>{person.relation}</h1>
+              </div>
+            ))}
+          </div>
+          <AddNhanKhauModel />
+        </div>
       </div>
     </BaseLayout>
   );
 }
+
+const thanhvienFakes = [
+  {
+    name: "Ha thi Tu",
+    bod: "2020/1/1",
+    relation: "Con",
+  },
+  {
+    name: "Ha thi Tu",
+    bod: "2020/1/1",
+    relation: "Con",
+  },
+  {
+    name: "Ha thi Tu",
+    bod: "2020/1/1",
+    relation: "Con",
+  },
+  {
+    name: "Ha thi Tu",
+    bod: "2020/1/1",
+    relation: "Con",
+  },
+];
