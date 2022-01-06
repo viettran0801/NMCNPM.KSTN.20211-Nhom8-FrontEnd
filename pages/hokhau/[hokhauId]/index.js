@@ -9,13 +9,22 @@ export default function HoKhauDetailpage() {
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
         <div className="flex justify-between items-center pb-10 border-b">
-          <h1 className="text-xl">{`Chi tiết hộ khẩu mã ${hokhauId}`} </h1>
+          <div className="flex items-center space-x-5">
+            <h1 className="text-xl">{`Chi tiết hộ khẩu mã ${hokhauId}`} </h1>
+            <Link
+              href={`/hokhau/${hokhauId}/edit`}
+              className="flex items-center space-x-3 px-3 py-2 bg-blue-700 text-white rounded-lg hover:opacity-80 duration-100"
+            >
+              <PencilIcon />
+              <span>Chỉnh sửa</span>
+            </Link>
+          </div>
+
           <Link
-            href={`/hokhau/${hokhauId}/edit`}
-            className="flex items-center space-x-3 px-3 py-2 bg-blue-700 text-white rounded-lg hover:scale-105 duration-300"
+            href="/hokhau"
+            className="flex items-center  px-3 py-1 border-green-500 text-green-500 border rounded-lg hover:opacity-80 duration-100"
           >
-            <PencilIcon />
-            <span>Chỉnh sửa</span>
+            Quay lại danh sách hộ khẩu
           </Link>
         </div>
         <div className="grid grid-cols-2 gap-x-20 gap-y-10">

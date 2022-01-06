@@ -34,15 +34,9 @@ export default function HoKhauPage() {
               <h1>{item.owner}</h1>
               <h1 className="col-span-2">{item.addres}</h1>
               <div className="flex space-x-3">
-                <Link
-                  href={`/hokhau/${item.id}/edit`}
-                  className="text-green-500"
-                >
+                <Link href={`/hokhau/${item.id}/edit`}>
                   <PencilIcon />
                 </Link>
-                <button className="text-red-500">
-                  <TrashIcon />
-                </button>
               </div>
             </div>
           ))}
