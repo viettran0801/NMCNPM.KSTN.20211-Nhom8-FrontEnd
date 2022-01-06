@@ -18,7 +18,7 @@ export default function Dashboard() {
         </div>
         <div className="flex space-x-3 items-center">
           <UserGroupIcon />
-          <Link href="/">Quản lý hộ khẩu</Link>
+          <Link href="/hokhau">Quản lý hộ khẩu</Link>
         </div>
         <div className="flex space-x-3 items-center">
           <UsersIcon />
