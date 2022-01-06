@@ -1,10 +1,10 @@
-import Link from "next/link";
+import CustomLink from "next/link";
 
-export default function CustomLink(props) {
+export default function Link(props) {
   const { href, children, ...rest } = props;
   return (
-    <Link href={href}>
+    <CustomLink href={href}>
       <a {...rest}>{children}</a>
-    </Link>
+    </CustomLink>
   );
 }
