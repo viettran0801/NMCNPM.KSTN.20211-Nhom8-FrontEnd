@@ -51,7 +51,11 @@ export default function TamtruDetailpage() {
           </div>
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Lý do</h1>
-            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+            <h1>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s,
+            </h1>
           </div>
         </div>
       </div>
