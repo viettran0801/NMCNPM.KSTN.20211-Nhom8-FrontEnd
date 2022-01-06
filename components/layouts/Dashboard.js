@@ -80,7 +80,7 @@ export default function Dashboard() {
         </Disclosure>
         <div className="flex space-x-3 items-center p-3">
           <CalendarIcon />
-          <Link href="/">Quản lý cuộc họp</Link>
+          <Link href="/cuochop">Quản lý cuộc họp</Link>
         </div>
         <div className="flex space-x-3 items-center p-3">
           <SettingIcon />
