@@ -1,12 +1,11 @@
+import { useRouter } from "next/router";
+import { Form, Formik } from "formik";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { Form, Formik } from "formik";
 import Input from "../../../components/common/Input";
-import AddNhanKhauModel from "../../../components/nhankhau/AddNhanKhauModel";
-import { useRouter } from "next/router";
 import { TrashIcon } from "../../../components/icons";
 
-export default function AddHoKhauPage() {
+export default function EditNhanKhauPage() {
   const router = useRouter();
   const { nhankhauId } = router.query;
   return (
@@ -114,26 +113,3 @@ export default function AddHoKhauPage() {
     </BaseLayout>
   );
 }
-
-const thanhvienFakes = [
-  {
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-  {
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-  {
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-  {
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-];

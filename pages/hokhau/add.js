@@ -1,11 +1,13 @@
-import BaseLayout from "../../components/layouts/BaseLayout";
-import Link from "../../components/common/Link";
+import { useRouter } from "next/router";
 import { Form, Formik } from "formik";
+import Link from "../../components/common/Link";
 import Input from "../../components/common/Input";
-import AddNhanKhauModel from "../../components/nhankhau/AddNhanKhauModel";
 import { TrashIcon } from "../../components/icons";
+import BaseLayout from "../../components/layouts/BaseLayout";
+import AddNhanKhauModel from "../../components/nhankhau/AddNhanKhauModel";
 
 export default function AddHoKhauPage() {
+  const router = useRouter();
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -30,6 +32,7 @@ export default function AddHoKhauPage() {
           }}
           onSubmit={(values, { setSubmitting }) => {
             setSubmitting(false);
+            router.push(`/hokhau/${1}`);
           }}
         >
           {({ isSubmitting }) => (

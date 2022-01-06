@@ -1,6 +1,6 @@
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
-import { PencilIcon, PlusIcon, TrashIcon } from "../../components/icons";
+import { PlusIcon } from "../../components/icons";
 
 export default function HoKhauPage() {
   return (
