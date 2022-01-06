@@ -1,9 +1,9 @@
+import { Form, Formik } from "formik";
+import { useRouter } from "next/router";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { Form, Formik } from "formik";
 import Input from "../../../components/common/Input";
 import AddNhanKhauModel from "../../../components/nhankhau/AddNhanKhauModel";
-import { useRouter } from "next/router";
 import { TrashIcon } from "../../../components/icons";
 
 export default function AddHoKhauPage() {

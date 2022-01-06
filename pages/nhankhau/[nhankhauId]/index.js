@@ -3,7 +3,7 @@ import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 
-export default function HoKhauDetailpage() {
+export default function NhankhauDetailpage() {
   const { nhankhauId } = useRouter().query;
   return (
     <BaseLayout>

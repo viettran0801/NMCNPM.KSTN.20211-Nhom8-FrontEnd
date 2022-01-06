@@ -1,6 +1,5 @@
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
-import { PencilIcon, PlusIcon, TrashIcon } from "../../components/icons";
 
 export default function NhankhauPage() {
   return (
