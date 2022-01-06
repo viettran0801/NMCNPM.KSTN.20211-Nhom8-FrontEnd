@@ -1,18 +1,20 @@
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import BaseLayout from "../../components/layouts/BaseLayout";
-import Link from "../../components/common/Link";
-import Input from "../../components/common/Input";
+import BaseLayout from "../../../components/layouts/BaseLayout";
+import Link from "../../../components/common/Link";
+import Input from "../../../components/common/Input";
+import { TrashIcon } from "../../../components/icons";
 
-export default function AddCuochopPage() {
+export default function EditCuochopPage() {
   const router = useRouter();
+  const { cuochopId } = router.query;
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
         <div className="flex justify-between items-center pb-10 border-b">
-          <h1 className="text-xl">Tạo cuộc họp mới</h1>
+          <h1 className="text-xl">Chỉnh sửa cuộc họp</h1>
           <Link
-            href="/cuochop"
+            href={`/cuochop/${cuochopId}`}
             className="px-3 py-1 border-red-500 text-red-500 border rounded-lg"
           >
             Hủy
