@@ -22,7 +22,7 @@ export default function Dashboard() {
         </div>
         <div className="flex space-x-3 items-center">
           <UsersIcon />
-          <Link href="/">Quản lý nhân khẩu</Link>
+          <Link href="/nhankhau">Quản lý nhân khẩu</Link>
         </div>
         <div className="flex space-x-3 items-center">
           <CalendarIcon />

@@ -21,7 +21,7 @@ export default function HoKhauPage() {
             <h1>Mã hộ khẩu</h1>
             <h1>Chủ hộ</h1>
             <h1 className="col-span-2">Địa chỉ</h1>
-            <h1>Thao tác</h1>
+            <h1>Chỉnh sửa</h1>
           </div>
           {hokhauFakes.map((item) => (
             <div className="grid grid-cols-5 gap-5 hover:bg-gray-50 py-5 rounded duration-50">
