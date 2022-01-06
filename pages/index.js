@@ -1,25 +1,12 @@
-import { useSession, signIn, signOut, getSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
+import BaseLayout from "../components/layouts/BaseLayout";
 
 export default function Home() {
-  const { data: session } = useSession();
-  return (
-    <>
-      <div>
-        <button onClick={() => signIn()}>Sign in</button>
-      </div>
-      <div>
-        Signed in as {session?.user.email} <br />
-      </div>
-      <div>
-        <button onClick={() => signOut()}>Signout</button>
-      </div>
-    </>
-  );
+  return <BaseLayout>Home page</BaseLayout>;
 }
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  console.log(session);
   return {
     props: {},
   };

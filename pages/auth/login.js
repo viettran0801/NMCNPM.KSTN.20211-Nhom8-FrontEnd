@@ -1,9 +1,9 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import BaseLayout from "../../components/layout/BaseLayout";
+import BaseLayout from "../../components/layouts/BaseLayout";
 
 export default function LoginPage() {
   return (
-    <BaseLayout>
+    <BaseLayout isDashboard={false}>
       <div className="mt-[100px] w-[500px] mx-auto space-y-10">
         <h1 className="text-4xl">Đăng nhập</h1>
         <Formik
