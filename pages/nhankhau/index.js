@@ -30,7 +30,7 @@ export default function NhankhauPage() {
               <h1>{item.identityNumber}</h1>
               <h1>{item.gender}</h1>
               <h1 className="col-span-3">{item.address}</h1>
-              <Link href={`/hokhau/${item.id}/edit`}>
+              <Link href={`/nhankhau/${item.id}/edit`}>
                 <PencilIcon />
               </Link>
             </div>

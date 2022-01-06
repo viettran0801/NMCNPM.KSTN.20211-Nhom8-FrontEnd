@@ -89,7 +89,6 @@ export default function AddNhanKhauModel() {
                     job: "",
                     academicLevel: "",
                     workplace: "",
-                    relation: "",
                   }}
                   validate={(values) => {
                     const errors = {};

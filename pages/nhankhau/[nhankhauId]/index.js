@@ -2,8 +2,6 @@ import { useRouter } from "next/router";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { Formik, Form } from "formik";
-import Input from "../../../components/common/Input";
 
 export default function HoKhauDetailpage() {
   const { nhankhauId } = useRouter().query;
@@ -14,7 +12,7 @@ export default function HoKhauDetailpage() {
           <div className="flex items-center space-x-5">
             <h1 className="text-xl">Chi tiết nhân khẩu </h1>
             <Link
-              href={`/hokhau/${nhankhauId}/edit`}
+              href={`/nhankhau/${nhankhauId}/edit`}
               className="flex items-center space-x-3 px-3 py-2 bg-blue-700 text-white rounded-lg hover:opacity-80 duration-100"
             >
               <PencilIcon />
