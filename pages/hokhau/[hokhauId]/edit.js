@@ -49,17 +49,21 @@ export default function AddHoKhauPage() {
                   <h1 className="text-xl">Danh sách thành viên</h1>
                   <AddNhanKhauModel />
                 </div>
-                <div className="space-y-5 w-[600px]">
-                  <div className="grid grid-cols-3 gap-10 text-gray-500">
+                <div className="w-[800px]">
+                  <div className="grid grid-cols-4 gap-10 text-gray-500">
                     <h1>Họ và tên</h1>
                     <h1>Ngày sinh</h1>
                     <h1>Quan hệ với chủ hộ</h1>
+                    <h1>Xóa</h1>
                   </div>
                   {thanhvienFakes.map((person) => (
-                    <div className="grid grid-cols-3 gap-10">
+                    <div className="grid grid-cols-4 gap-10 py-3 hover:bg-gray-50 duration-100">
                       <h1>{person.name}</h1>
                       <h1>{person.bod}</h1>
                       <h1>{person.relation}</h1>
+                      <button className="text-red-500">
+                        <TrashIcon />
+                      </button>
                     </div>
                   ))}
                 </div>

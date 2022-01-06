@@ -19,13 +19,20 @@ export default function HoKhauDetailpage() {
               <span>Chỉnh sửa</span>
             </Link>
           </div>
-
-          <Link
-            href="/nhankhau"
-            className="flex items-center  px-3 py-1 border-green-500 text-green-500 border rounded-lg hover:opacity-80 duration-100"
-          >
-            Quay lại danh sách nhân khẩu
-          </Link>
+          <div className="flex items-center space-x-3">
+            <Link
+              href="/hokhau/1"
+              className="flex items-center  px-3 py-1 border-orange-500 text-orange-500 border rounded-lg hover:opacity-80 duration-100"
+            >
+              Hộ khẩu
+            </Link>
+            <Link
+              href="/nhankhau"
+              className="flex items-center  px-3 py-1 border-green-500 text-green-500 border rounded-lg hover:opacity-80 duration-100"
+            >
+              Danh sách nhân khẩu
+            </Link>
+          </div>
         </div>
         <div className="space-y-5">
           <div className="grid grid-cols-2 gap-10">
