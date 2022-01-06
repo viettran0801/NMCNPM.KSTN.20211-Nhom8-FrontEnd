@@ -41,7 +41,7 @@ export default function Home() {
                 <h1 className="col-span-2">Địa điểm</h1>
               </div>
               {meetingFakes.map((meeting) => (
-                <div className="grid grid-cols-8 gap-5">
+                <div className="grid grid-cols-8 gap-5" key={meeting.creator}>
                   <h1>{meeting.status}</h1>
                   <h1>{meeting.creator}</h1>
                   <h1 className="col-span-2">{meeting.title}</h1>
@@ -57,7 +57,7 @@ export default function Home() {
             </div>
             <div className="space-y-5">
               {recentActivityFakes.map((act) => (
-                <div className="flex space-x-3">
+                <div className="flex space-x-3" key={act.id}>
                   <div className="flex space-x-3 items-center">
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                     <h1 className="min-w-[100px] text-gray-700 italic">
@@ -84,26 +84,32 @@ export async function getServerSideProps(context) {
 
 const recentActivityFakes = [
   {
+    id: 1,
     time: "5 phút trước",
     desciption: "Thêm hộ khẩu mớ",
   },
   {
+    id: 2,
     time: "5 phút trước",
     desciption: "Thêm hộ khẩu mớ asdasdasdasd dsd sd sd s",
   },
   {
+    id: 3,
     time: "5 phút trước",
     desciption: "Thêm hộ khẩu mớ",
   },
   {
+    id: 4,
     time: "5 phút trước",
     desciption: "Thêm hộ khẩu mớ",
   },
   {
+    id: 5,
     time: "5 phút trước",
     desciption: "Thêm hộ khẩu mớ",
   },
   {
+    id: 6,
     time: "5 phút trước",
     desciption: "Thêm hộ khẩu mớ",
   },

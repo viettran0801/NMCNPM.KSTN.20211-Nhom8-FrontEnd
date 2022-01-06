@@ -19,7 +19,10 @@ export default function NhankhauPage() {
             <h1>Chỉnh sửa</h1>
           </div>
           {nhankhauFakes.map((item) => (
-            <div className="grid grid-cols-8 gap-5 hover:bg-gray-50 py-5 rounded duration-50">
+            <div
+              className="grid grid-cols-8 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
+              key={item.id}
+            >
               <Link
                 href={`/nhankhau/${item.id}`}
                 className="hover:underline decoration-blue-700"

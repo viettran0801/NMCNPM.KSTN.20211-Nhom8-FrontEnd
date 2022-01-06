@@ -52,7 +52,10 @@ export default function AddHoKhauPage() {
                     <h1>Xóa</h1>
                   </div>
                   {thanhvienFakes.map((person) => (
-                    <div className="grid grid-cols-4 gap-10 py-3 hover:bg-gray-50 duration-100">
+                    <div
+                      className="grid grid-cols-4 gap-10 py-3 hover:bg-gray-50 duration-100"
+                      key={person.name}
+                    >
                       <h1>{person.name}</h1>
                       <h1>{person.bod}</h1>
                       <h1>{person.relation}</h1>

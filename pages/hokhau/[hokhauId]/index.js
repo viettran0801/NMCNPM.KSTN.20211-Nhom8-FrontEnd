@@ -52,7 +52,10 @@ export default function HoKhauDetailpage() {
               <h1>Quan hệ với chủ hộ</h1>
             </div>
             {thanhvienFakes.map((person) => (
-              <div className="grid grid-cols-3 gap-10 py-3 hover:bg-gray-50 duration-100">
+              <div
+                className="grid grid-cols-3 gap-10 py-3 hover:bg-gray-50 duration-100"
+                key={person.id}
+              >
                 <Link
                   href={`/nhankhau/${person.id}`}
                   className="hover:underline decoration-blue-700"
