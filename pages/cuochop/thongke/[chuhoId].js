@@ -91,6 +91,7 @@ export default function ThongKePage() {
                       : "hover:text-blue-500 hover:bg-blue-50"
                   }`
                 }
+                key={tab}
               >
                 {tab}
               </Tab>
@@ -98,7 +99,7 @@ export default function ThongKePage() {
           </Tab.List>
           <Tab.Panels>
             {cuochopFakes.map((meetings) => (
-              <Tab.Panel>
+              <Tab.Panel key={meetings.length}>
                 <div className="grid grid-cols-6 gap-5 text-gray-500">
                   <h1>Người tạo</h1>
                   <h1 className="col-span-2">Tiêu đề</h1>
