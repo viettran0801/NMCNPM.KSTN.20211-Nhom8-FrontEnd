@@ -10,6 +10,7 @@ import {
   ArcElement,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
+import { Tab } from "@headlessui/react";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 
@@ -56,33 +57,47 @@ export default function ThongKePage() {
         </div>
       </div>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
-        <div className="flex justify-between items-center pb-10 border-b">
-          <h1 className="text-xl">Danh sách chủ hộ</h1>
-        </div>
-        <div>
-          <div className="grid grid-cols-8 gap-5 text-gray-500">
-            <h1>Mã hộ khẩu</h1>
-            <h1 className="col-span-2">Họ và tên chủ hộ</h1>
-            <h1 className="col-span-2">Địa chỉ</h1>
-            <h1>Tham gia</h1>
-            <h1>Vắng có lý do</h1>
-            <h1>Vắng không có lý do</h1>
-          </div>
-          {familyFakes.map((item) => (
-            <Link
-              href={`/thongke/${item.id}`}
-              className="grid grid-cols-8 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
-              key={item.id}
-            >
-              <h1>{item.id}</h1>
-              <h1 className="col-span-2">{item.name}</h1>
-              <h1 className="col-span-2">{item.address}</h1>
-              <h1>{item.attend}</h1>
-              <h1>{item.absentWithReason}</h1>
-              <h1>{item.asbentWithoutReason}</h1>
-            </Link>
-          ))}
-        </div>
+        <Tab.Group>
+          <Tab.List className="flex w-[800px] rounded-lg overflow-hidden divide-x-2">
+            {tabs.map((tab) => (
+              <Tab
+                className={({ selected }) =>
+                  `w-full py-3 text-gray-500 bg-gray-100 focus:outline-none duration-300 ${
+                    selected
+                      ? "text-blue-700 bg-blue-200 shadow"
+                      : "hover:text-blue-500 hover:bg-blue-50"
+                  }`
+                }
+              >
+                {tab}
+              </Tab>
+            ))}
+          </Tab.List>
+          <Tab.Panels>
+            {cuochopFakes.map((meetings) => (
+              <Tab.Panel>
+                <div className="grid grid-cols-6 gap-5 text-gray-500">
+                  <h1>Người tạo</h1>
+                  <h1 className="col-span-2">Tiêu đề</h1>
+                  <h1>Thời gian</h1>
+                  <h1 className="col-span-2">Địa điểm</h1>
+                </div>
+                {meetings.map((item) => (
+                  <Link
+                    href={`/cuochop/${item.id}`}
+                    className="grid grid-cols-6 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
+                    key={item.id}
+                  >
+                    <h1>{item.creator}</h1>
+                    <h1 className="col-span-2">{item.title}</h1>
+                    <h1>{item.time}</h1>
+                    <h1 className="col-span-2">{item.address}</h1>
+                  </Link>
+                ))}
+              </Tab.Panel>
+            ))}
+          </Tab.Panels>
+        </Tab.Group>
       </div>
     </BaseLayout>
   );
@@ -149,47 +164,76 @@ const data2 = {
   ],
 };
 
-const familyFakes = [
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-    address: "123 đường A, phố B, tỉnh C",
-  },
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
+const tabs = ["Tham gia", "Vắng có lý do", "Vắng không có lý do"];
 
-    address: "123 đường A, phố B, tỉnh C",
-  },
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-
-    address: "123 đường A, phố B, tỉnh C",
-  },
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-    address: "123 đường A, phố B, tỉnh C",
-  },
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-    address: "123 đường A, phố B, tỉnh C",
-  },
+const cuochopFakes = [
+  [
+    {
+      id: 1,
+      creator: "Hà Thị Tuấn",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+    {
+      id: 1,
+      creator: "Hà Thị Tuấn",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+    {
+      id: 1,
+      creator: "Hà Thị Tuấn",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+    {
+      id: 1,
+      creator: "Hà Thị Tuấn",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+    {
+      id: 1,
+      creator: "Hà Thị Tuấn",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+  ],
+  [
+    {
+      id: 1,
+      creator: "Hà Thị Trung",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+    {
+      id: 1,
+      creator: "Hà Thị Trung",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+    {
+      id: 1,
+      creator: "Hà Thị Trung",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+  ],
+  [
+    {
+      id: 1,
+      creator: "Hà Thị Gay",
+      address: "123 đường A, phố B, huyện C, tỉnh D",
+      title: "Họp thông đít",
+      time: "13:00 13/3/1333",
+    },
+  ],
 ];
