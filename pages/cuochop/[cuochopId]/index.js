@@ -74,14 +74,15 @@ export default function CuochopDetailpage() {
               <h1 className="col-span-2">Lý do</h1>
             </div>
             {personFakes.map((person) => (
-              <div
+              <Link
+                href={`/cuochop/thongke/${person.id}`}
                 className="grid grid-cols-4 gap-5 hover:bg-gray-50 py-3 rounded duration-50"
                 key={person.id}
               >
                 <h1>{person.name}</h1>
                 <input type="checkbox" checked={person.attend} />
                 <h1 className="col-span-2">{person.reason}</h1>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

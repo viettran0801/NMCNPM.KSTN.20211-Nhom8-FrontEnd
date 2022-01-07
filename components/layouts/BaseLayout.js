@@ -15,7 +15,7 @@ export default function BaseLayout({ isDashboard = true, children }) {
             </>
           )}
         </div>
-        <div className="flex-1 mx-10 bg-gray-50 rounded-t-xl overflow-hidden">
+        <div className="flex-1 mx-10 bg-gray-50 rounded-t-xl overflow-hidden mb-20">
           {children}
         </div>
       </div>
