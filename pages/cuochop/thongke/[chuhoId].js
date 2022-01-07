@@ -28,13 +28,23 @@ export default function ThongKePage() {
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
         <div className="flex justify-between items-center pb-10 border-b">
-          <h1 className="text-xl">Thống kê cuộc họp</h1>
+          <h1 className="text-xl">Thống kê cuộc họp theo chủ hộ</h1>
           <Link
             href="/cuochop"
             className="px-3 py-1 border-green-500 text-green-500 border rounded-lg"
           >
-            Danh sách cuộc họp
+            Thống kê cuộc họp
           </Link>
+        </div>
+        <div className="grid grid-cols-2 gap-x-20 pb-10 border-b">
+          <div className="space-y-3">
+            <h1 className="text-gray-500">Họ và tên chủ hộ</h1>
+            <h1>Hà Thị Tú</h1>
+          </div>
+          <div className="space-y-3">
+            <h1 className="text-gray-500">Địa chỉ</h1>
+            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+          </div>
         </div>
         <div className="flex items-center space-x-20">
           <div className="w-[800px]">
@@ -60,7 +70,7 @@ export default function ThongKePage() {
           </div>
           {familyFakes.map((item) => (
             <Link
-              href={`/cuochop/thongke/${item.id}`}
+              href={`/thongke/${item.id}`}
               className="grid grid-cols-8 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
@@ -97,11 +107,25 @@ const data = {
   ],
   datasets: [
     {
-      label: "Số cuộc họp",
+      label: "Số cuộc họp tham gia",
       data: [
         733, 255, 366, 556, 223, 140, 222, 733, 255, 366, 556, 223, 140, 222,
       ],
       backgroundColor: "rgba(255, 99, 132, 0.5)",
+    },
+    {
+      label: "Số cuộc họp vắng có lý do",
+      data: [
+        140, 222, 733, 255, 366, 556, 223, 140, 222, 733, 255, 366, 556, 223,
+      ],
+      backgroundColor: "rgba(255, 206, 86, 0.2)",
+    },
+    {
+      label: "Số cuộc họp vắng không có lý do",
+      data: [
+        366, 556, 223, 140, 222, 733, 255, 366, 556, 223, 140, 222, 733, 255,
+      ],
+      backgroundColor: "rgba(54, 162, 235, 0.2)",
     },
   ],
 };
