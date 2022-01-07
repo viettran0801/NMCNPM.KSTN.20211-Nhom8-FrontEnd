@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
-import { TrashIcon } from "../../../components/icons";
 
 export default function EditCuochopPage() {
   const router = useRouter();
@@ -22,10 +21,11 @@ export default function EditCuochopPage() {
         </div>
         <Formik
           initialValues={{
-            location: "",
-            title: "",
-            time: "",
-            content: "",
+            location: "123 đường A, phố B, huyện C, tỉnh D",
+            title: "Họp phòng chống ấu dâm",
+            time: "13:10 12/12/1222",
+            content:
+              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s,",
           }}
           validate={(values) => {
             const errors = {};
@@ -73,7 +73,11 @@ export default function EditCuochopPage() {
                       key={person.id}
                     >
                       <h1>{person.name}</h1>
-                      <input type="checkbox" className="ml-2" />
+                      <input
+                        type="checkbox"
+                        className="ml-2"
+                        checked={person.invited}
+                      />
                     </div>
                   ))}
                 </div>
@@ -96,8 +100,8 @@ export default function EditCuochopPage() {
 }
 
 const chuhoFakes = [
-  { id: 1, name: "Ha thi Tu" },
-  { id: 1, name: "Ha thi Tu" },
-  { id: 1, name: "Ha thi Tu" },
-  { id: 1, name: "Ha thi Tu" },
+  { id: 1, name: "Ha thi Tu", invited: true },
+  { id: 1, name: "Ha thi Tu", invited: true },
+  { id: 1, name: "Ha thi Tu", invited: false },
+  { id: 1, name: "Ha thi Tu", invited: true },
 ];
