@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,9 +10,11 @@ import {
   ArcElement,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
-import { Tab } from "@headlessui/react";
+import { Tab, Menu } from "@headlessui/react";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
+import { ChevronDownIcon } from "../../../components/icons";
+import Transition from "../../../components/common/Transition";
 
 ChartJS.register(
   CategoryScale,
@@ -29,7 +31,28 @@ export default function ThongKePage() {
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
         <div className="flex justify-between items-center pb-10 border-b">
-          <h1 className="text-xl">Thống kê cuộc họp theo chủ hộ</h1>
+          <div className="flex space-x-3 items-center">
+            <h1 className="text-xl">Thống kê cuộc họp theo chủ hộ</h1>
+            <Menu as="div" className="relative">
+              <Menu.Button className="flex items-center space-x-3 px-3 py-2 border border-gray-300 rounded-lg hover:opacity-80 duration-100 focus:outline-none">
+                <span>1 năm gần nhất</span>
+                <ChevronDownIcon className="w-5 h-5" />
+              </Menu.Button>
+              <Transition>
+                <Menu.Items className="absolute right-0 w-56 mt-2 bg-white divide-y rounded-md shadow-lg focus:outline-none">
+                  {staticFilters.map((staticFilter) => (
+                    <Menu.Item key={staticFilter.name}>
+                      {({ active }) => (
+                        <button className="text-left w-full block px-3 py-2 hover:bg-blue-300 hover:text-white duration-100">
+                          {staticFilter.name}
+                        </button>
+                      )}
+                    </Menu.Item>
+                  ))}
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          </div>
           <Link
             href="/cuochop/thongke"
             className="px-3 py-1 border-green-500 text-green-500 border rounded-lg"
@@ -165,6 +188,13 @@ const data2 = {
 };
 
 const tabs = ["Tham gia", "Vắng có lý do", "Vắng không có lý do"];
+
+const staticFilters = [
+  { name: "1 tháng gần nhất" },
+  { name: "3 tháng gần nhất" },
+  { name: "1 năm gần nhất" },
+  { name: "3 năm gần nhất" },
+];
 
 const cuochopFakes = [
   [
