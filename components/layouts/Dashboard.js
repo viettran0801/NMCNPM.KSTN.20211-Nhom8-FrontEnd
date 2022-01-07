@@ -22,10 +22,6 @@ export default function Dashboard() {
           <UserGroupIcon />
           <Link href="/hokhau">Quản lý hộ khẩu</Link>
         </div>
-        <div className="flex space-x-3 items-center p-3">
-          <UsersIcon />
-          <Link href="/nhankhau">Quản lý nhân khẩu</Link>
-        </div>
         <Disclosure>
           {({ open }) => (
             <div>
