@@ -31,7 +31,7 @@ export default function ThongKePage() {
         <div className="flex justify-between items-center pb-10 border-b">
           <h1 className="text-xl">Thống kê cuộc họp theo chủ hộ</h1>
           <Link
-            href="/cuochop"
+            href="/cuochop/thongke"
             className="px-3 py-1 border-green-500 text-green-500 border rounded-lg"
           >
             Thống kê cuộc họp
