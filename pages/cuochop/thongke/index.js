@@ -61,11 +61,11 @@ export default function ThongKePage() {
             Danh sách cuộc họp
           </Link>
         </div>
-        <div className="flex items-center space-x-20">
-          <div className="w-[800px]">
+        <div className="grid grid-cols-3 gap-10">
+          <div className="col-span-2 flex items-center">
             <Bar data={data} />
           </div>
-          <div className="w-[300px]">
+          <div className="flex items-center">
             <Pie data={data2} />
           </div>
         </div>
