@@ -18,6 +18,12 @@ export default function CuochopDetailpage() {
               <PencilIcon />
               <span>Chỉnh sửa</span>
             </Link>
+            <Link
+              href={`/cuochop/${cuochopId}/diemdanh`}
+              className="flex items-center space-x-3 px-3 py-2 bg-green-700 text-white rounded-lg hover:opacity-80 duration-100"
+            >
+              <span>Điểm danh</span>
+            </Link>
           </div>
 
           <Link
