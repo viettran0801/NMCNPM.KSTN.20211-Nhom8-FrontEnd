@@ -6,10 +6,12 @@ import Input from "../../../components/common/Input";
 import { TrashIcon } from "../../../components/icons";
 import { fetchAPI } from "../../../utils";
 import { getSession, useSession } from "next-auth/react";
+import { useState } from "react";
 export default function EditTamtruPage({ tamtru }) {
   const router = useRouter();
   const { tamtruId } = router.query;
   const { data: session } = useSession();
+  const [errorMessage, setErrorMessage] = useState("");
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -36,14 +38,18 @@ export default function EditTamtruPage({ tamtru }) {
             return errors;
           }}
           onSubmit={async (values) => {
-            const res = await fetchAPI(`/api/v1/tamtru/${tamtruId}`, {
-              method: "PUT",
-              body: {
-                ...values,
-              },
-              token: session.token,
-            });
-            router.push(`/tamtru/${tamtruId}`);
+            try {
+              const res = await fetchAPI(`/api/v1/tamtru/${tamtruId}`, {
+                method: "PUT",
+                body: {
+                  ...values,
+                },
+                token: session.token,
+              });
+              router.push(`/tamtru/${tamtruId}`);
+            } catch (err) {
+              setErrorMessage(err.message);
+            }
           }}
         >
           {({ isSubmitting }) => (
@@ -59,6 +65,7 @@ export default function EditTamtruPage({ tamtru }) {
                 <Input label="Lý do" name="lyDo" type="textarea" />
               </div>
               <div>
+                <p className="text-red-700">{errorMessage}</p>
                 <button
                   type="submit"
                   disabled={isSubmitting}
