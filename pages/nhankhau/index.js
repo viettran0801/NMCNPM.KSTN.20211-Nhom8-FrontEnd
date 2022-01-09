@@ -5,7 +5,7 @@ import { getSession } from "next-auth/react";
 export default function NhankhauPage({ nhanKhaus }) {
   return (
     <BaseLayout>
-      <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
+      <div className="m-5 rounded-2xl bg-white py-10 px-5 space-y-10">
         <div className="flex justify-between items-center pb-10 border-b">
           <h1 className="text-xl">Danh sách nhân khẩu</h1>
         </div>
