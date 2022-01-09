@@ -1,7 +1,9 @@
+import { useSession } from "next-auth/react";
 import BellIcon, { MailIcon } from "../icons";
 import Dashboard from "./Dashboard";
 
 export default function BaseLayout({ isDashboard = true, children }) {
+  const { data: sesssion } = useSession();
   return (
     <div className="min-h-screen flex">
       {isDashboard && <Dashboard />}
@@ -11,7 +13,7 @@ export default function BaseLayout({ isDashboard = true, children }) {
             <>
               <BellIcon />
               <MailIcon />
-              <h1>Hatuan</h1>
+              <h1>{sesssion?.user?.name}</h1>
             </>
           )}
         </div>
