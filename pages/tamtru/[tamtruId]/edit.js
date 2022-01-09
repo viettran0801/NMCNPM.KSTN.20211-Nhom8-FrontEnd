@@ -5,11 +5,11 @@ import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
 import { TrashIcon } from "../../../components/icons";
 import { fetchAPI } from "../../../utils";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 export default function EditTamtruPage({ tamtru }) {
   const router = useRouter();
   const { tamtruId } = router.query;
-  console.log(tamtru);
+  const { data: session } = useSession();
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -35,9 +35,15 @@ export default function EditTamtruPage({ tamtru }) {
             const errors = {};
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            setSubmitting(false);
-            router.push(`/tamtru/1`);
+          onSubmit={async (values) => {
+            const res = await fetchAPI(`/api/v1/tamtru/${tamtruId}`, {
+              method: "PUT",
+              body: {
+                ...values,
+              },
+              token: session.token,
+            });
+            router.push(`/tamtru/${tamtruId}`);
           }}
         >
           {({ isSubmitting }) => (
