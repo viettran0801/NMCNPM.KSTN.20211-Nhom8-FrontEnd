@@ -1,8 +1,9 @@
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
-
-export default function TamVangPage() {
+import { getSession } from "next-auth/react";
+import { fetchAPI, parseInstantToDate } from "../../utils";
+export default function TamVangPage({ tamVangs }) {
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -26,19 +27,19 @@ export default function TamVangPage() {
             <h1>Từ ngày</h1>
             <h1>Đến ngày</h1>
           </div>
-          {tamvangFakes.map((item) => (
+          {tamVangs.map((item) => (
             <Link
               href={`/tamvang/${item.id}`}
               className="grid grid-cols-8 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
               <h1>{item.id}</h1>
-              <h1>{item.name}</h1>
-              <h1>{item.identityNumber}</h1>
-              <h1>{item.gender}</h1>
-              <h1 className="col-span-2">{item.address}</h1>
-              <h1>{item.fromDate}</h1>
-              <h1>{item.toDate}</h1>
+              <h1>{item.hoVaTen}</h1>
+              <h1>{item.cccd}</h1>
+              <h1>{item.gioiTinh}</h1>
+              <h1 className="col-span-2">{item.diaChi}</h1>
+              <h1>{parseInstantToDate(item.tuNgay)}</h1>
+              <h1>{parseInstantToDate(item.denNgay)}</h1>
             </Link>
           ))}
         </div>
@@ -48,51 +49,27 @@ export default function TamVangPage() {
 }
 
 TamVangPage.auth = true;
+export async function getServerSideProps(context) {
+  const getTamVangUrl = "/api/v1/tamvang";
+  const session = await getSession(context);
 
-const tamvangFakes = [
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-    fromDate: "16-10-1999",
-    toDate: "20-10-1999",
-  },
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-    fromDate: "16-10-1999",
-    toDate: "20-10-1999",
-  },
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-    fromDate: "16-10-1999",
-    toDate: "20-10-1999",
-  },
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-    fromDate: "16-10-1999",
-    toDate: "20-10-1999",
-  },
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-    fromDate: "16-10-1999",
-    toDate: "20-10-1999",
-  },
-];
+  try {
+    const res = await fetchAPI(getTamVangUrl, {
+      method: "GET",
+      body: {},
+      token: session.token,
+      params: {},
+    });
+
+    const tamVangs = res.result.content;
+
+    return {
+      props: { tamVangs },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { tamVangs: [] },
+    };
+  }
+}
