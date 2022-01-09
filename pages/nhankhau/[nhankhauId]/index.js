@@ -119,18 +119,16 @@ NhankhauDetailpage.auth = true;
 
 export async function getServerSideProps(context) {
   const { nhankhauId } = context.query;
-  const getNhanKhauDetailUrl = "/api/v1/nhankhau/" + nhankhauId;
   const session = await getSession(context);
 
   try {
-    const res = await fetchAPI(getNhanKhauDetailUrl, {
-      method: "GET",
-      body: {},
-      token: session.token,
-      params: {},
-    });
+    const { result: nhanKhau } = await fetchAPI(
+      `/api/v1/nhankhau/${nhankhauId}`,
+      {
+        token: session.token,
+      }
+    );
 
-    const nhanKhau = res.result;
     return {
       props: { nhanKhau },
     };
