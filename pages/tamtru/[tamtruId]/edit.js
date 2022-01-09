@@ -64,8 +64,8 @@ export default function EditTamtruPage({ tamtru }) {
               <div className="col-span-2">
                 <Input label="Lý do" name="lyDo" type="textarea" />
               </div>
+              <p className="text-red-700">{errorMessage}</p>
               <div>
-                <p className="text-red-700">{errorMessage}</p>
                 <button
                   type="submit"
                   disabled={isSubmitting}
