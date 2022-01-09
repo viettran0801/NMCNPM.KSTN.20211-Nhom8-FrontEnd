@@ -41,7 +41,7 @@ export default function EditTamtruPage({ tamtru }) {
           }}
           onSubmit={async (values) => {
             try {
-              const res = await fetchAPI(`/api/v1/tamtru/${tamtruId}`, {
+              await fetchAPI(`/api/v1/tamtru/${tamtruId}`, {
                 method: "PUT",
                 body: {
                   ...values,
