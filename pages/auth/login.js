@@ -1,7 +1,11 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import BaseLayout from "../../components/layouts/BaseLayout";
+import { signIn, useSession } from "next-auth/react";
 
 export default function LoginPage() {
+  const { data: session, status } = useSession();
+  console.log(session, status);
+
   return (
     <BaseLayout isDashboard={false}>
       <div className="mt-[100px] w-[500px] mx-auto space-y-10">
@@ -12,7 +16,14 @@ export default function LoginPage() {
             const errors = {};
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
+          onSubmit={async (values, { setSubmitting }) => {
+            const res = await signIn("credentials", {
+              username: values.username,
+              password: values.password,
+              redirect: false,
+            });
+            // console.log(res);
+
             setSubmitting(false);
           }}
         >
