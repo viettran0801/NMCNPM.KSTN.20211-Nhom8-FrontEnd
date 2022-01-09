@@ -27,7 +27,10 @@ export default function AddHoKhauPage({ hoKhau }) {
 
   const removeHoKhau = async () => {
     try {
-      await fetchAPI(`/api/v1/hokhau/${hokhauId}`);
+      await fetchAPI(`/api/v1/hokhau/${hokhauId}`, {
+        method: "DELETE",
+        token: session.token,
+      });
       router.push("/hokhau");
     } catch (err) {
       setErrorMessage(err.message);
@@ -123,7 +126,10 @@ export default function AddHoKhauPage({ hoKhau }) {
             </Form>
           )}
         </Formik>
-        <button className="px-3 py-2 bg-red-700 text-white rounded-lg hover:scale-105 duration-300 flex space-x-3">
+        <button
+          className="px-3 py-2 bg-red-700 text-white rounded-lg hover:scale-105 duration-300 flex space-x-3"
+          onClick={removeHoKhau}
+        >
           <TrashIcon />
           <span>Xóa hộ khẩu</span>
         </button>
