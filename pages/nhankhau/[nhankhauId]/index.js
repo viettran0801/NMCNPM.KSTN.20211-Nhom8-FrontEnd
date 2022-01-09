@@ -2,8 +2,10 @@ import { useRouter } from "next/router";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
+import { getSession } from "next-auth/react";
+import { fetchAPI, parseInstantToDate } from "../../../utils";
 
-export default function NhankhauDetailpage() {
+export default function NhankhauDetailpage({ nhanKhau }) {
   const { nhankhauId } = useRouter().query;
   return (
     <BaseLayout>
@@ -38,73 +40,73 @@ export default function NhankhauDetailpage() {
           <div className="grid grid-cols-2 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Họ và tên</h1>
-              <h1>Hà Thị Tú</h1>
+              <h1>{nhanKhau.hoVaTen}</h1>
             </div>
             <div className="space-y-3">
               <h1 className="text-gray-500">Tên gọi khác (nếu có)</h1>
-              <h1>Hà Thị Nấu dấm</h1>
+              <h1>{nhanKhau.hoVaTenKhac}</h1>
             </div>
           </div>
           <div className="flex items-center">
             <div className="space-y-3">
               <h1 className="text-gray-500">Ngày sinh</h1>
-              <h1>20/10/2020</h1>
+              <h1>{parseInstantToDate(nhanKhau.ngaySinh)}</h1>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Số CMND/CCCD</h1>
-              <h1>123456789</h1>
+              <h1>{nhanKhau.cccd}</h1>
             </div>
             <div className="space-y-3">
               <h1 className="text-gray-500">Số hộ chiếu</h1>
-              <h1>123456789</h1>
+              <h1>{nhanKhau.soHoChieu}</h1>
             </div>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Quan hệ với chủ hộ</h1>
-            <h1>Con đĩ</h1>
+            <h1>{nhanKhau.quanHeVoiChuHo}</h1>
           </div>
           <div className="grid grid-cols-9 gap-10">
             <div className="col-span-3 space-y-3">
               <h1 className="text-gray-500">Nguyên quán</h1>
-              <h1>Hà Nam</h1>
+              <h1>{nhanKhau.nguyenQuan}</h1>
             </div>
             <div className="col-span-2 space-y-3">
               <h1 className="text-gray-500">Dân tộc</h1>
-              <h1>LGBT</h1>
+              <h1>{nhanKhau.danToc}</h1>
             </div>
             <div className="col-span-2 space-y-3">
               <h1 className="text-gray-500">Tôn giáo</h1>
-              <h1>Đạo 7 màu</h1>
+              <h1>{nhanKhau.tonGiao}</h1>
             </div>
             <div className="col-span-2 space-y-3">
               <h1 className="text-gray-500">Quốc tịch</h1>
-              <h1>Tiểu quốc Hà Nam</h1>
+              <h1>{nhanKhau.quocTich}</h1>
             </div>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Địa chỉ thường trú</h1>
-            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+            <h1>{nhanKhau.noiThuongTru}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Địa chỉ hiện tại</h1>
-            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+            <h1>{nhanKhau.diaChiHienTai}</h1>
           </div>
           <div className="grid grid-cols-9 gap-10">
             <div className="col-span-2 space-y-3">
               <h1 className="text-gray-500">Trình độ học vấn</h1>
-              <h1>100/12</h1>
+              <h1>{nhanKhau.trinhDoHocVan}</h1>
             </div>
 
             <div className="col-span-3 space-y-3">
               <h1 className="text-gray-500">Nghề nghiệp</h1>
-              <h1>Nấu dấm</h1>
+              <h1>{nhanKhau.ngheNghiep}</h1>
             </div>
 
             <div className="col-span-4 space-y-3">
               <h1 className="text-gray-500">Nơi làm việc</h1>
-              <h1>Trên giường</h1>
+              <h1>{nhanKhau.noiLamViec}</h1>
             </div>
           </div>
         </div>
@@ -114,3 +116,28 @@ export default function NhankhauDetailpage() {
 }
 
 NhankhauDetailpage.auth = true;
+
+export async function getServerSideProps(context) {
+  const { nhankhauId } = context.query;
+  const getNhanKhauDetailUrl = "/api/v1/nhankhau/" + nhankhauId;
+  const session = await getSession(context);
+
+  try {
+    const res = await fetchAPI(getNhanKhauDetailUrl, {
+      method: "GET",
+      body: {},
+      token: session.token,
+      params: {},
+    });
+
+    const nhanKhau = res.result;
+    return {
+      props: { nhanKhau },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { nhanKhau: {} },
+    };
+  }
+}
