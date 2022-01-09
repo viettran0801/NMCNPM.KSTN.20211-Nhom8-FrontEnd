@@ -78,11 +78,10 @@ HoKhauDetailpage.auth = true;
 
 export async function getServerSideProps(context) {
   const { hokhauId } = context.query;
-  const getHoKhauDetailUrl = "/api/v1/hokhau/" + hokhauId;
   const session = await getSession(context);
 
   try {
-    const res = await fetchAPI(getHoKhauDetailUrl, {
+    const res = await fetchAPI(`/api/v1/hokhau/${hokhauId}`, {
       method: "GET",
       body: {},
       token: session.token,
