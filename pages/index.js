@@ -34,7 +34,7 @@ export default function Home({ metadata, recentActivities, meetings }) {
               <h1 className="text-xl">Danh sách cuộc họp gần đây</h1>
             </div>
             <div className="space-y-5">
-              <div className="grid grid-cols-8 text-gray-500">
+              <div className="grid grid-cols-8 gap-1 text-gray-500">
                 <h1>Trạng thái</h1>
                 <h1>Người tạo</h1>
                 <h1 className="col-span-2">Tiêu đề</h1>
@@ -42,7 +42,7 @@ export default function Home({ metadata, recentActivities, meetings }) {
                 <h1 className="col-span-2">Địa điểm</h1>
               </div>
               {meetings.map((meeting) => (
-                <div className="grid grid-cols-8" key={meeting.id}>
+                <div className="grid grid-cols-8 gap-1" key={meeting.id}>
                   <h1>
                     {new Date(meeting.thoiGian) < Date.now()
                       ? "Đã diễn ra"
