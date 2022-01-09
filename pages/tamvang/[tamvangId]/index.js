@@ -2,8 +2,10 @@ import { useRouter } from "next/router";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
+import { getSession } from "next-auth/react";
+import { fetchAPI, parseInstantToDate } from "../../../utils";
 
-export default function TamvangDetailpage() {
+export default function TamvangDetailpage({ tamvang }) {
   const { tamvangId } = useRouter().query;
   return (
     <BaseLayout>
@@ -30,32 +32,28 @@ export default function TamvangDetailpage() {
         <div className="grid grid-cols-2 gap-x-20 gap-y-10">
           <div className="space-y-3">
             <h1 className="text-gray-500">Họ và tên</h1>
-            <h1>Hà Thị Tú</h1>
+            <h1>{tamvang.hoVaTen}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Số CMND/CCCD</h1>
-            <h1>123456789</h1>
+            <h1>{tamvang.cccd}</h1>
           </div>
 
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Địa chỉ</h1>
-            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+            <h1>{tamvang.diaChi}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Từ ngày</h1>
-            <h1>10-10-1111</h1>
+            <h1>{parseInstantToDate(tamvang.tuNgay)}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Đến ngày</h1>
-            <h1>10-10-1111</h1>
+            <h1>{parseInstantToDate(tamvang.denNgay)}</h1>
           </div>
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Lý do</h1>
-            <h1>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industrys standard dummy text
-              ever since the 1500s,
-            </h1>
+            <h1>{tamvang.lyDo}</h1>
           </div>
         </div>
       </div>
@@ -64,3 +62,21 @@ export default function TamvangDetailpage() {
 }
 
 TamvangDetailpage.auth = true;
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { tamvangId } = await context.query;
+  try {
+    const { result: tamvang } = await fetchAPI(`/api/v1/tamtru/${tamvangId}`, {
+      token: session.token,
+    });
+    return {
+      props: {
+        tamvang,
+      },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
+}
