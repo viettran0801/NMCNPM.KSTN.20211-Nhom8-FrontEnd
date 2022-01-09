@@ -81,14 +81,9 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
 
   try {
-    const res = await fetchAPI(`/api/v1/hokhau/${hokhauId}`, {
-      method: "GET",
-      body: {},
+    const { result: hoKhau } = await fetchAPI(`/api/v1/hokhau/${hokhauId}`, {
       token: session.token,
-      params: {},
     });
-
-    const hoKhau = res.result;
 
     return {
       props: { hoKhau },
