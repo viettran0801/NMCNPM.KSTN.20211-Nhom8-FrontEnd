@@ -3,7 +3,6 @@ import { Form, Formik } from "formik";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
-import { TrashIcon } from "../../../components/icons";
 import { getSession, useSession } from "next-auth/react";
 import { fetchAPI } from "../../../utils";
 import moment from "moment";
