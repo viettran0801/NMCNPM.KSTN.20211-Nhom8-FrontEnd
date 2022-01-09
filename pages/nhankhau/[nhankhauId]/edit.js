@@ -4,8 +4,10 @@ import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
 import { TrashIcon } from "../../../components/icons";
+import { getSession } from "next-auth/react";
+import { fetchAPI } from "../../../utils";
 
-export default function EditNhanKhauPage() {
+export default function EditNhanKhauPage({ nhanKhau }) {
   const router = useRouter();
   const { nhankhauId } = router.query;
   return (
@@ -22,22 +24,22 @@ export default function EditNhanKhauPage() {
         </div>
         <Formik
           initialValues={{
-            name: "Hà Đức Tuấn",
-            otherName: "",
-            bod: "20/2/2001",
+            hoVaTen: nhanKhau.hoVaTen,
+            hoVaTenKhac: nhanKhau.hoVaTenKhac,
+            ngaySinh: nhanKhau.ngaySinh,
             gender: "Nam",
-            identityNumber: "123456789",
-            passportNumber: "123456789",
-            homeTown: "Hà Nam",
-            nationality: "Việt Nam",
-            religion: "Không",
-            ethnic: "Kinh",
-            permanentAddress: "123 đường A, phố B, huyện C, tỉnh D",
-            address: "123 đường A, phố B, huyện C, tỉnh D",
-            relation: "Con",
-            job: "Công nhân",
-            academicLevel: "12/12",
-            workplace: "Công ty abc",
+            cccd: nhanKhau.cccd,
+            soHoChieu: nhanKhau.soHoChieu,
+            nguyenQuan: nhanKhau.nguyenQuan,
+            quocTich: nhanKhau.quocTich,
+            tonGiao: nhanKhau.tonGiao,
+            danToc: nhanKhau.danToc,
+            noiThuongTru: nhanKhau.noiThuongTru,
+            diaChiHienTai: nhanKhau.diaChiHienTai,
+            quanHeVoiChuHo: nhanKhau.quanHeVoiChuHo,
+            ngheNghiep: nhanKhau.ngheNghiep,
+            trinhDoHocVan: nhanKhau.trinhDoHocVan,
+            noiLamViec: nhanKhau.noiLamViec,
           }}
           validate={(values) => {
             const errors = {};
@@ -51,46 +53,46 @@ export default function EditNhanKhauPage() {
           {({ isSubmitting }) => (
             <Form className="space-y-5">
               <div className="grid grid-cols-2 gap-10">
-                <Input label="Họ và tên" name="name" />
-                <Input label="Tên gọi khác (nếu có)" name="otherName" />
+                <Input label="Họ và tên" name="hoVaTen" />
+                <Input label="Tên gọi khác (nếu có)" name="hoVaTenKhac" />
               </div>
               <div className="flex items-center">
-                <Input label="Ngày sinh" name="bod" />
+                <Input label="Ngày sinh" name="ngaySinh" />
               </div>
               <div className="grid grid-cols-2 gap-10">
-                <Input label="Số CMND/CCCD" name="identityNumber" />
-                <Input label="Số hộ chiếu" name="passportNumber" />
+                <Input label="Số CMND/CCCD" name="cccd" />
+                <Input label="Số hộ chiếu" name="soHoChieu" />
               </div>
               <div className="flex items-center">
-                <Input label="Quan hệ với chủ hộ" name="relation" />
+                <Input label="Quan hệ với chủ hộ" name="quanHeVoiChuHo" />
               </div>
               <div className="grid grid-cols-9 gap-10">
                 <div className="col-span-3">
-                  <Input label="Nguyên quán" name="homeTown" />
+                  <Input label="Nguyên quán" name="nguyenQuan" />
                 </div>
                 <div className="col-span-2">
-                  <Input label="Dân tộc" name="ethnic" />
+                  <Input label="Dân tộc" name="danToc" />
                 </div>
                 <div className="col-span-2">
-                  <Input label="Tôn giáo" name="religion" />
+                  <Input label="Tôn giáo" name="tonGiao" />
                 </div>
                 <div className="col-span-2">
-                  <Input label="Quốc tịch" name="nationality" />
+                  <Input label="Quốc tịch" name="quocTich" />
                 </div>
               </div>
-              <Input label="Địa chỉ thường trú" name="permanentAddress" />
-              <Input label="Địa chỉ hiện tại" name="address" />
+              <Input label="Địa chỉ thường trú" name="noiThuongTru" />
+              <Input label="Địa chỉ hiện tại" name="diaChiHienTai" />
               <div className="grid grid-cols-9 gap-10">
                 <div className="col-span-2">
-                  <Input label="Trình độ học vấn" name="academicLevel" />
+                  <Input label="Trình độ học vấn" name="trinhDoHocVan" />
                 </div>
 
                 <div className="col-span-3">
-                  <Input label="Nghề nghiệp" name="job" />
+                  <Input label="Nghề nghiệp" name="ngheNghiep" />
                 </div>
 
                 <div className="col-span-4">
-                  <Input label="Nơi làm việc" name="workplace" />
+                  <Input label="Nơi làm việc" name="noiLamViec" />
                 </div>
               </div>
               <div>
@@ -114,3 +116,27 @@ export default function EditNhanKhauPage() {
   );
 }
 EditNhanKhauPage.auth = true;
+
+export async function getServerSideProps(context) {
+  const { nhankhauId } = context.query;
+  const session = await getSession(context);
+
+  try {
+    const { result: nhanKhau } = await fetchAPI(
+      `/api/v1/nhankhau/${nhankhauId}`,
+      {
+        token: session.token,
+      }
+    );
+    console.log(nhanKhau);
+
+    return {
+      props: { nhanKhau },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { nhanKhau: {} },
+    };
+  }
+}
