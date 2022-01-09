@@ -78,10 +78,6 @@ export default function Dashboard() {
           <CalendarIcon />
           <Link href="/cuochop">Quản lý cuộc họp</Link>
         </div>
-        <div className="flex space-x-3 items-center p-3">
-          <SettingIcon />
-          <Link href="/">Tài khoản</Link>
-        </div>
       </div>
     </div>
   );
