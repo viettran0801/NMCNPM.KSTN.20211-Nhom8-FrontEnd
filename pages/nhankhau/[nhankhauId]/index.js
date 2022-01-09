@@ -47,10 +47,14 @@ export default function NhankhauDetailpage({ nhanKhau }) {
               <h1>{nhanKhau.hoVaTenKhac}</h1>
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="grid grid-cols-2 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Ngày sinh</h1>
               <h1>{parseInstantToDate(nhanKhau.ngaySinh)}</h1>
+            </div>
+            <div className="space-y-3">
+              <h1 className="text-gray-500">Giới tính</h1>
+              <h1>{nhanKhau.gioiTinh}</h1>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-10">
