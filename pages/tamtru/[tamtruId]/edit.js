@@ -7,11 +7,13 @@ import { TrashIcon } from "../../../components/icons";
 import { fetchAPI } from "../../../utils";
 import { getSession, useSession } from "next-auth/react";
 import { useState } from "react";
+import moment from "moment";
 export default function EditTamtruPage({ tamtru }) {
   const router = useRouter();
   const { tamtruId } = router.query;
   const { data: session } = useSession();
   const [errorMessage, setErrorMessage] = useState("");
+
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -29,8 +31,8 @@ export default function EditTamtruPage({ tamtru }) {
             diaChi: tamtru.diaChi,
             hoVaTen: tamtru.hoVaTen,
             cccd: tamtru.cccd,
-            tuNgay: tamtru.tuNgay,
-            denNgay: tamtru.denNgay,
+            tuNgay: moment(tamtru.tuNgay).format("YYYY-MM-DD"),
+            denNgay: moment(tamtru.denNgay).format("YYYY-MM-DD"),
             lyDo: tamtru.lyDo,
           }}
           validate={(values) => {
@@ -43,6 +45,8 @@ export default function EditTamtruPage({ tamtru }) {
                 method: "PUT",
                 body: {
                   ...values,
+                  tuNgay: moment(values.tuNgay + "Z").toISOString(),
+                  denNgay: moment(values.denNgay + "Z").toISOString(),
                 },
                 token: session.token,
               });
@@ -59,8 +63,8 @@ export default function EditTamtruPage({ tamtru }) {
               <div className=" col-span-2">
                 <Input label="Địa chỉ" name="diaChi" />
               </div>
-              <Input label="Từ ngày" name="tuNgay" />
-              <Input label="Đến ngày" name="denNgay" />
+              <Input label="Từ ngày" name="tuNgay" type="date" />
+              <Input label="Đến ngày" name="denNgay" type="date" />
               <div className="col-span-2">
                 <Input label="Lý do" name="lyDo" type="textarea" />
               </div>
