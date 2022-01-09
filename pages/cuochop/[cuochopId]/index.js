@@ -2,9 +2,12 @@ import { useRouter } from "next/router";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
+import { fetchAPI, parseInstantToDateTime } from "../../../utils";
+import { getSession } from "next-auth/react";
 
-export default function CuochopDetailpage() {
+export default function CuochopDetailpage({ meetingDetail, diemDanh }) {
   const { cuochopId } = useRouter().query;
+
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -36,33 +39,25 @@ export default function CuochopDetailpage() {
         <div className="space-y-10 pb-10 border-b">
           <div className="space-y-3">
             <h1 className="text-gray-500">Tiêu đề</h1>
-            <h1>Họp phòng chống ấu dâm</h1>
+            <h1>{meetingDetail.tieuDe}</h1>
           </div>
           <div className="grid grid-cols-3 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Thời gian</h1>
-              <h1>13:10 12/12/1222</h1>
+              <h1>{meetingDetail.thoiGian}</h1>
             </div>
             <div className="space-y-3 col-span-2">
               <h1 className="text-gray-500">Địa điểm</h1>
-              <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+              <h1>{meetingDetail.diaDiem}</h1>
             </div>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Nội dung cuộc họp</h1>
-            <h1>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industrys standard dummy text
-              ever since the 1500s,
-            </h1>
+            <h1>{meetingDetail.noiDung}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Bản báo cáo cuộc họp</h1>
-            <h1>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industrys standard dummy text
-              ever since the 1500s,
-            </h1>
+            <h1>{meetingDetail.banBaoCao}</h1>
           </div>
         </div>
         <div className="space-y-3">
@@ -73,15 +68,15 @@ export default function CuochopDetailpage() {
               <h1>Tham gia</h1>
               <h1 className="col-span-2">Lý do</h1>
             </div>
-            {personFakes.map((person) => (
+            {diemDanh.map((person) => (
               <Link
                 href={`/cuochop/thongke/${person.id}`}
                 className="grid grid-cols-4 gap-5 hover:bg-gray-50 py-3 rounded duration-50"
-                key={person.id}
+                key={person.hoKhau}
               >
-                <h1>{person.name}</h1>
-                <input type="checkbox" checked={person.attend} />
-                <h1 className="col-span-2">{person.reason}</h1>
+                <h1>{person.hoTenChuHo}</h1>
+                <input type="checkbox" checked={person.diemDanh} />
+                <h1 className="col-span-2">{person.lyDo}</h1>
               </Link>
             ))}
           </div>
@@ -89,6 +84,43 @@ export default function CuochopDetailpage() {
       </div>
     </BaseLayout>
   );
+}
+
+export async function getServerSideProps(context) {
+  const { cuochopId } = context.query;
+  const session = await getSession(context);
+
+  const getMeetingDetailUrl = "/api/v1/cuochop/" + cuochopId;
+  const getAttendanceUrl = "/api/v1/cuochop/" + cuochopId + "/diemdanh";
+  try {
+    const res = await fetchAPI(getMeetingDetailUrl, {
+      method: "GET",
+      body: {},
+      token: session.token,
+      params: [],
+    });
+
+    var meetingDetail = res.result;
+    meetingDetail.thoiGian = parseInstantToDateTime(meetingDetail.thoiGian);
+
+    const getDiemDanh = await fetchAPI(getAttendanceUrl, {
+      method: "GET",
+      body: {},
+      token: session.token,
+      params: [],
+    });
+
+    const diemDanh = getDiemDanh.result;
+
+    return {
+      props: { meetingDetail, diemDanh },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { meetingDetail: {} },
+    };
+  }
 }
 
 const personFakes = [
