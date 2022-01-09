@@ -7,25 +7,33 @@ export default function Home({ metadata, recentActivities, meetings }) {
     <BaseLayout>
       <div className="px-5 py-10 space-y-20">
         <div className="grid grid-cols-4 gap-5">
-          <div className="bg-white rounded-xl p-5 space-y-5">
+          <div className="bg-white rounded-xl p-5 h-[150px] flex flex-col justify-between">
             <h1>Số lượng hộ khẩu</h1>
-            <h1 className="font-medium text-2xl">{metadata.soHoKhau}</h1>
-            <div className="h-1 bg-blue-700 w-full"></div>
+            <div className="space-y-5">
+              <h1 className="font-medium text-2xl">{metadata.soHoKhau}</h1>
+              <div className="h-1 bg-blue-700 w-full"></div>
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-5 space-y-5">
+          <div className="bg-white rounded-xl p-5  h-[150px] flex flex-col justify-between">
             <h1>Số lượng nhân khẩu</h1>
-            <h1 className="font-medium text-2xl">{metadata.soNhanKhau}</h1>
-            <div className="h-1 bg-yellow-500 w-full"></div>
+            <div className="space-y-5">
+              <h1 className="font-medium text-2xl">{metadata.soNhanKhau}</h1>
+              <div className="h-1 bg-yellow-500 w-full"></div>
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-5 space-y-5">
+          <div className="bg-white rounded-xl p-5 h-[150px] flex flex-col justify-between">
             <h1>Số lượng nhân khẩu tạm vắng</h1>
-            <h1 className="font-medium text-2xl">{metadata.soTamVang}</h1>
-            <div className="h-1 bg-green-500 w-full"></div>
+            <div className="space-y-5">
+              <h1 className="font-medium text-2xl">{metadata.soTamVang}</h1>
+              <div className="h-1 bg-green-500 w-full"></div>
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-5 space-y-5">
+          <div className="bg-white rounded-xl p-5  h-[150px] flex flex-col justify-between">
             <h1>Số lượng nhân khẩu tạm trú</h1>
-            <h1 className="font-medium text-2xl">{metadata.soTamTru}</h1>
-            <div className="h-1 bg-purple-500 w-full"></div>
+            <div className="space-y-5">
+              <h1 className="font-medium text-2xl">{metadata.soTamTru}</h1>
+              <div className="h-1 bg-purple-500 w-full"></div>
+            </div>
           </div>
         </div>
         <div className="grid grid-cols-10 gap-5">
