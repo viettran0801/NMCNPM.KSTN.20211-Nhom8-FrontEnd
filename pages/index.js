@@ -1,7 +1,7 @@
 import { getSession } from "next-auth/react";
 import BaseLayout from "../components/layouts/BaseLayout";
 import { convertTimeAgo, fetchAPI } from "../utils";
-
+import moment from "moment";
 export default function Home({ metadata, recentActivities, meetings }) {
   return (
     <BaseLayout>
@@ -44,13 +44,15 @@ export default function Home({ metadata, recentActivities, meetings }) {
               {meetings.map((meeting) => (
                 <div className="grid grid-cols-8 gap-5" key={meeting.id}>
                   <h1>
-                    {meeting.thoiGian < Date.now()
+                    {new Date(meeting.thoiGian) < Date.now()
                       ? "Đã diễn ra"
                       : "Chưa diễn ra"}
                   </h1>
                   <h1>{meeting.nguoiTao}</h1>
                   <h1 className="col-span-2">{meeting.tieuDe}</h1>
-                  <h1 className="col-span-2">{meeting.thoiGian}</h1>
+                  <h1 className="col-span-2">
+                    {moment(meeting.thoiGian).format("DD-MM-YYYY")}
+                  </h1>
                   <h1 className="col-span-2">{meeting.diaDiem}</h1>
                 </div>
               ))}
