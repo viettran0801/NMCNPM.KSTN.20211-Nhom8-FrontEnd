@@ -31,7 +31,7 @@ export default function Home({ metadata, recentActivities, meetings }) {
         <div className="grid grid-cols-10 gap-5">
           <div className="col-span-7 bg-white rounded-xl p-5 space-y-10">
             <div className="border-b pb-5">
-              <h1 className="text-xl">Danh sách cuộc họp gần đây</h1>
+              <h1 className="text-lg">Danh sách cuộc họp gần đây</h1>
             </div>
             <div className="space-y-5">
               <div className="grid grid-cols-8 gap-1 text-gray-500">
@@ -60,12 +60,12 @@ export default function Home({ metadata, recentActivities, meetings }) {
           </div>
           <div className="col-span-3 bg-white rounded-xl p-5 space-y-10">
             <div className="border-b pb-5">
-              <h1 className="text-xl">Hoạt động gần đây</h1>
+              <h1 className="text-lg">Hoạt động gần đây</h1>
             </div>
             <div className="space-y-5">
               {recentActivities.map((act) => (
                 <div className="flex space-x-3" key={act.id}>
-                  <div className="flex space-x-3 items-center">
+                  <div className="flex space-x-1 items-center">
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                     <h1 className="min-w-[100px] text-gray-700 italic">
                       {convertTimeAgo(act.time)}
