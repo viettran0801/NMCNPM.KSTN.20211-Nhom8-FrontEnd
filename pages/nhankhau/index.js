@@ -3,7 +3,6 @@ import Link from "../../components/common/Link";
 import { fetchAPI, parseInstantToDateTime } from "../../utils";
 import { getSession } from "next-auth/react";
 export default function NhankhauPage({ nhanKhaus }) {
-  console.log(nhanKhaus);
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -39,18 +38,17 @@ export default function NhankhauPage({ nhanKhaus }) {
 NhankhauPage.auth = true;
 
 export async function getServerSideProps(context) {
-  const getNhanKhauUrl = "/api/v1/nhankhau";
   const session = await getSession(context);
 
   try {
-    const res = await fetchAPI(getNhanKhauUrl, {
+    const {
+      result: { content: nhanKhaus },
+    } = await fetchAPI("/api/v1/nhankhau", {
       method: "GET",
       body: {},
       token: session.token,
       params: {},
     });
-
-    const nhanKhaus = res.result.content;
 
     return {
       props: { nhanKhaus },
