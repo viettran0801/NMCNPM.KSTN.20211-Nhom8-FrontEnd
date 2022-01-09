@@ -72,18 +72,22 @@ export default function EditNhanKhauPage({ nhanKhau }) {
                 <Input label="Họ và tên" name="hoVaTen" />
                 <Input label="Tên gọi khác (nếu có)" name="hoVaTenKhac" />
               </div>
-              <div className="flex items-center space-x-40">
-                <Input label="Ngày sinh" name="ngaySinh" type="date" />
-                <div className="flex items-center space-x-10 ">
-                  <label>Giới tinh</label>
-                  <label className="space-x-3">
-                    <Field type="radio" name="gioiTinh" value="Nam" />
-                    <span>Nam</span>
-                  </label>
-                  <label className="space-x-3">
-                    <Field type="radio" name="gioiTinh" value="Nữ" />
-                    <span>Nữ</span>
-                  </label>
+              <div className="grid grid-cols-2 gap-10">
+                <div className="w-fit">
+                  <Input label="Ngày sinh" name="ngaySinh" type="date" />
+                </div>
+                <div className="space-y-3">
+                  <h1 className="text-gray-500">Giới tinh</h1>
+                  <div className="space-x-10">
+                    <label className="space-x-3">
+                      <Field type="radio" name="gioiTinh" value="Nam" />
+                      <span>Nam</span>
+                    </label>
+                    <label className="space-x-3">
+                      <Field type="radio" name="gioiTinh" value="Nữ" />
+                      <span>Nữ</span>
+                    </label>
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-10">
