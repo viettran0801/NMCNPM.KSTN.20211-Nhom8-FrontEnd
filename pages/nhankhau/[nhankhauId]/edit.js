@@ -6,6 +6,7 @@ import Input from "../../../components/common/Input";
 import { TrashIcon } from "../../../components/icons";
 import { getSession } from "next-auth/react";
 import { fetchAPI } from "../../../utils";
+import moment from "moment";
 
 export default function EditNhanKhauPage({ nhanKhau }) {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function EditNhanKhauPage({ nhanKhau }) {
           initialValues={{
             hoVaTen: nhanKhau.hoVaTen,
             hoVaTenKhac: nhanKhau.hoVaTenKhac,
-            ngaySinh: nhanKhau.ngaySinh,
+            ngaySinh: moment(nhanKhau.ngaySinh).format("YYYY-MM-DD"),
             gender: "Nam",
             cccd: nhanKhau.cccd,
             soHoChieu: nhanKhau.soHoChieu,
@@ -57,7 +58,7 @@ export default function EditNhanKhauPage({ nhanKhau }) {
                 <Input label="Tên gọi khác (nếu có)" name="hoVaTenKhac" />
               </div>
               <div className="flex items-center">
-                <Input label="Ngày sinh" name="ngaySinh" />
+                <Input label="Ngày sinh" name="ngaySinh" type="date" />
               </div>
               <div className="grid grid-cols-2 gap-10">
                 <Input label="Số CMND/CCCD" name="cccd" />
