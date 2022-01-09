@@ -29,7 +29,8 @@ export function parseInstantToDateTime(time) {
   const d = new Date(time);
 
   var datestring = "";
-  if (d.getHours < 10) datestring += "0";
+
+  if (d.getHours() < 10) datestring += "0";
   datestring += d.getHours() + ":";
 
   if (d.getMinutes() < 10) datestring += "0";
