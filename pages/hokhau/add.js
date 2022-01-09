@@ -13,6 +13,7 @@ export default function AddHoKhauPage() {
   const router = useRouter();
   const [nhanKhaus, setNhanKhaus] = useState([]);
   const { data: session } = useSession();
+  const [errorMessage, setErrorMessage] = useState("");
   const addNhanKhau = (nhanKhau) => {
     setNhanKhaus([...nhanKhaus, nhanKhau]);
   };
@@ -54,7 +55,7 @@ export default function AddHoKhauPage() {
               });
               router.push(`/hokhau/${result.id}`);
             } catch (err) {
-              console.log(err.message);
+              setErrorMessage(err.message);
             }
           }}
         >
@@ -95,6 +96,7 @@ export default function AddHoKhauPage() {
                   ))}
                 </div>
               </div>
+              <p className="text-red-700 col-span-2">{errorMessage}</p>
               <div>
                 <button
                   type="submit"
