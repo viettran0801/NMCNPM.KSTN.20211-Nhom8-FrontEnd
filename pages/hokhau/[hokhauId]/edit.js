@@ -7,10 +7,33 @@ import AddNhanKhauModel from "../../../components/nhankhau/AddNhanKhauModel";
 import { TrashIcon } from "../../../components/icons";
 import { getSession } from "next-auth/react";
 import { fetchAPI } from "../../../utils";
+import moment from "moment";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 export default function AddHoKhauPage({ hoKhau }) {
   const router = useRouter();
   const { hokhauId } = router.query;
+  const [nhanKhaus, setNhanKhaus] = useState(hoKhau.nhanKhaus);
+  const { data: session } = useSession();
+  const [errorMessage, setErrorMessage] = useState("");
+  const addNhanKhau = (nhanKhau) => {
+    setNhanKhaus([...nhanKhaus, nhanKhau]);
+  };
+
+  const removeNhanKhau = (nhanKhauId) => {
+    setNhanKhaus(nhanKhaus.filter((nhanKhau) => nhanKhau.id != nhanKhauId));
+  };
+
+  const removeHoKhau = async () => {
+    try {
+      await fetchAPI(`/api/v1/hokhau/${hokhauId}`);
+      router.push("/hokhau");
+    } catch (err) {
+      setErrorMessage(err.message);
+    }
+  };
+
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -33,9 +56,20 @@ export default function AddHoKhauPage({ hoKhau }) {
             const errors = {};
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            setSubmitting(false);
-            router.push(`/hokhau/${hokhauId}`);
+          onSubmit={async (values) => {
+            try {
+              await fetchAPI(`/api/v1/hokhau/${hokhauId}`, {
+                method: "PUT",
+                body: {
+                  ...values,
+                  nhanKhaus: nhanKhaus.map((nhanKhau) => nhanKhau.id),
+                },
+                token: session.token,
+              });
+              router.push(`/hokhau/${hokhauId}`);
+            } catch (err) {
+              setErrorMessage(err.message);
+            }
           }}
         >
           {({ isSubmitting }) => (
@@ -49,7 +83,7 @@ export default function AddHoKhauPage({ hoKhau }) {
               <div className="space-y-10 col-span-2">
                 <div className="flex items-center space-x-10 pb-10 border-b">
                   <h1 className="text-xl">Danh sách thành viên</h1>
-                  <AddNhanKhauModel />
+                  <AddNhanKhauModel addNhanKhau={addNhanKhau} />
                 </div>
                 <div className="w-[800px]">
                   <div className="grid grid-cols-4 gap-10 text-gray-500">
@@ -58,21 +92,25 @@ export default function AddHoKhauPage({ hoKhau }) {
                     <h1>Quan hệ với chủ hộ</h1>
                     <h1>Xóa</h1>
                   </div>
-                  {hoKhau.nhanKhaus.map((person) => (
+                  {nhanKhaus.map((nhanKhau) => (
                     <div
                       className="grid grid-cols-4 gap-10 py-3 hover:bg-gray-50 duration-100"
-                      key={person.id}
+                      key={nhanKhau.id}
                     >
-                      <h1>{person.hoVaTen}</h1>
-                      <h1>{person.ngaySinh}</h1>
-                      <h1>{person.quanHeVoiChuHo}</h1>
-                      <button className="text-red-500">
+                      <h1>{nhanKhau.hoVaTen}</h1>
+                      <h1>{moment(nhanKhau.ngaySinh).format("DD-MM-YYYY")}</h1>
+                      <h1>{nhanKhau.quanHeVoiChuHo}</h1>
+                      <button
+                        className="text-red-500"
+                        onClick={() => removeNhanKhau(nhanKhau.id)}
+                      >
                         <TrashIcon />
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
+              <p className="text-red-700 col-span-2">{errorMessage}</p>
               <div>
                 <button
                   type="submit"
