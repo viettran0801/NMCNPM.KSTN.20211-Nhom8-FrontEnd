@@ -3,8 +3,10 @@ import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import { Field, Form, Formik } from "formik";
-
-export default function CuochopDetailpage() {
+import moment from "moment";
+import { fetchAPI } from "../../../utils";
+import { getSession } from "next-auth/react";
+export default function CuochopDetailpage({ meeting }) {
   const { cuochopId } = useRouter().query;
   return (
     <BaseLayout>
@@ -24,16 +26,16 @@ export default function CuochopDetailpage() {
         <div className="space-y-10 pb-10 border-b">
           <div className="space-y-3">
             <h1 className="text-gray-500">Tiêu đề</h1>
-            <h1>Họp phòng chống ấu dâm</h1>
+            <h1>{meeting.tieuDe}</h1>
           </div>
           <div className="grid grid-cols-3 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Thời gian</h1>
-              <h1>13:10 12/12/1222</h1>
+              <h1>{moment(meeting.thoiGian).format("hh:mm DD-MM-YYYY")}</h1>
             </div>
             <div className="space-y-3 col-span-2">
               <h1 className="text-gray-500">Địa điểm</h1>
-              <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+              <h1>{meeting.diaDiem}</h1>
             </div>
           </div>
         </div>
@@ -83,6 +85,25 @@ export default function CuochopDetailpage() {
 }
 
 CuochopDetailpage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { cuochopId } = context.query;
+
+  try {
+    const { result: meeting } = await fetchAPI(`/api/v1/cuochop/${cuochopId}`, {
+      token: session.token,
+    });
+    return {
+      props: { meeting },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { meeting: {} },
+    };
+  }
+}
 
 const personFakes = [
   {
