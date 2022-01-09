@@ -1,8 +1,9 @@
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
-
-export default function HoKhauPage() {
+import { getSession } from "next-auth/react";
+import { fetchAPI } from "../../utils";
+export default function HoKhauPage({ hoKhaus }) {
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -22,15 +23,15 @@ export default function HoKhauPage() {
             <h1>Chủ hộ</h1>
             <h1 className="col-span-3">Địa chỉ</h1>
           </div>
-          {hokhauFakes.map((item) => (
+          {hoKhaus.map((item) => (
             <Link
               href={`/hokhau/${item.id}`}
               className="grid grid-cols-5 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
               <h1>{item.id}</h1>
-              <h1>{item.owner}</h1>
-              <h1 className="col-span-3">{item.addres}</h1>
+              <h1>{item.hoTenChuHo}</h1>
+              <h1 className="col-span-3">{item.diaChi}</h1>
             </Link>
           ))}
         </div>
@@ -41,35 +42,27 @@ export default function HoKhauPage() {
 
 HoKhauPage.auth = true;
 
-const hokhauFakes = [
-  {
-    id: "0001",
-    owner: "Hà Thị Tuấn",
-    addres: "123 đường A, phố B, huyện C, tỉnh D",
-  },
-  {
-    id: "0001",
-    owner: "Hà Thị Tuấn",
-    addres: "123 đường A, phố B, huyện C, tỉnh D",
-  },
-  {
-    id: "0001",
-    owner: "Hà Thị Tuấn",
-    addres: "123 đường A, phố B, huyện C, tỉnh D",
-  },
-  {
-    id: "0001",
-    owner: "Hà Thị Tuấn",
-    addres: "123 đường A, phố B, huyện C, tỉnh D",
-  },
-  {
-    id: "0001",
-    owner: "Hà Thị Tuấn",
-    addres: "123 đường A, phố B, huyện C, tỉnh D",
-  },
-  {
-    id: "0001",
-    owner: "Hà Thị Tuấn",
-    addres: "123 đường A, phố B, huyện C, tỉnh D",
-  },
-];
+export async function getServerSideProps(context) {
+  const getHoKhauUrl = "/api/v1/hokhau";
+  const session = await getSession(context);
+
+  try {
+    const res = await fetchAPI(getHoKhauUrl, {
+      method: "GET",
+      body: {},
+      token: session.token,
+      params: {},
+    });
+
+    const hoKhaus = res.result.content;
+
+    return {
+      props: { hoKhaus },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { hoKhaus: [] },
+    };
+  }
+}

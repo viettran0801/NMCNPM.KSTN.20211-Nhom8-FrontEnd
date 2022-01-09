@@ -2,9 +2,11 @@ import { useRouter } from "next/router";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-
-export default function HoKhauDetailpage() {
+import { getSession } from "next-auth/react";
+import { fetchAPI, parseInstantToDateTime } from "../../../utils";
+export default function HoKhauDetailpage({ hoKhau }) {
   const { hokhauId } = useRouter().query;
+
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -30,15 +32,15 @@ export default function HoKhauDetailpage() {
         <div className="grid grid-cols-2 gap-x-20 gap-y-10">
           <div className="space-y-3">
             <h1 className="text-gray-500">Họ và tên chủ hộ</h1>
-            <h1>Hà Thị Tú</h1>
+            <h1>{hoKhau.hoTenChuHo}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Số CMND/CCCD của chủ hộ</h1>
-            <h1>123456789</h1>
+            <h1>{hoKhau.cccdChuHo}</h1>
           </div>
           <div className=" col-span-2 space-y-3">
             <h1 className="text-gray-500">Địa chỉ</h1>
-            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+            <h1>{hoKhau.diaChi}</h1>
           </div>
         </div>
         <div className="space-y-5">
@@ -51,7 +53,7 @@ export default function HoKhauDetailpage() {
               <h1>Ngày sinh</h1>
               <h1>Quan hệ với chủ hộ</h1>
             </div>
-            {thanhvienFakes.map((person) => (
+            {hoKhau.nhanKhaus.map((person) => (
               <div
                 className="grid grid-cols-3 gap-10 py-3 hover:bg-gray-50 duration-100"
                 key={person.id}
@@ -60,10 +62,10 @@ export default function HoKhauDetailpage() {
                   href={`/nhankhau/${person.id}`}
                   className="hover:underline decoration-blue-700"
                 >
-                  {person.name}
+                  {person.hoVaTen}
                 </Link>
-                <h1>{person.bod}</h1>
-                <h1>{person.relation}</h1>
+                <h1>{parseInstantToDateTime(person.ngaySinh)}</h1>
+                <h1>{person.quanHeVoiChuHo}</h1>
               </div>
             ))}
           </div>
@@ -73,14 +75,29 @@ export default function HoKhauDetailpage() {
   );
 }
 HoKhauDetailpage.auth = true;
-const thanhvienFakes = [
-  {
-    id: 1,
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-  { id: 1, name: "Ha thi Tu", bod: "2020/1/1", relation: "Con" },
-  { id: 1, name: "Ha thi Tu", bod: "2020/1/1", relation: "Con" },
-  { id: 1, name: "Ha thi Tu", bod: "2020/1/1", relation: "Con" },
-];
+
+export async function getServerSideProps(context) {
+  const { hokhauId } = context.query;
+  const getHoKhauDetailUrl = "/api/v1/hokhau/" + hokhauId;
+  const session = await getSession(context);
+
+  try {
+    const res = await fetchAPI(getHoKhauDetailUrl, {
+      method: "GET",
+      body: {},
+      token: session.token,
+      params: {},
+    });
+
+    const hoKhau = res.result;
+
+    return {
+      props: { hoKhau },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { hoKhau: {} },
+    };
+  }
+}
