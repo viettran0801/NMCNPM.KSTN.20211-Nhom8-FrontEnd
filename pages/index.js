@@ -31,7 +31,7 @@ export default function Home({ metadata, recentActivities, meetings }) {
         <div className="grid grid-cols-10 gap-5">
           <div className="col-span-7 bg-white rounded-xl p-5 space-y-10">
             <div className="border-b pb-5">
-              <h1 className="text-xl">Danh sách cuộc họp</h1>
+              <h1 className="text-xl">Danh sách cuộc họp gần đây</h1>
             </div>
             <div className="space-y-5">
               <div className="grid grid-cols-8 gap-5 text-gray-500">
@@ -51,7 +51,7 @@ export default function Home({ metadata, recentActivities, meetings }) {
                   <h1>{meeting.nguoiTao}</h1>
                   <h1 className="col-span-2">{meeting.tieuDe}</h1>
                   <h1 className="col-span-2">
-                    {moment(meeting.thoiGian).format("DD-MM-YYYY")}
+                    {moment(meeting.thoiGian).format("hh:mm DD-MM-YYYY")}
                   </h1>
                   <h1 className="col-span-2">{meeting.diaDiem}</h1>
                 </div>
@@ -105,6 +105,7 @@ export async function getServerSideProps(context) {
       params: {
         page: 0,
         size: 5,
+        sort: "thoiGian,DESC",
       },
       token: session.token,
     });

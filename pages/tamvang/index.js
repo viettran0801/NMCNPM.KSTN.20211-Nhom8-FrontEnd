@@ -38,8 +38,8 @@ export default function TamVangPage({ tamVangs }) {
               <h1>{item.cccd}</h1>
               <h1>{item.gioiTinh}</h1>
               <h1 className="col-span-2">{item.diaChi}</h1>
-              <h1>{parseInstantToDate(item.tuNgay)}</h1>
-              <h1>{parseInstantToDate(item.denNgay)}</h1>
+              <h1>{moment(item.tuNgay).format("DD-MM-YYYY")}</h1>
+              <h1>{moment(item.denNgay).format("DD-MM-YYYY")}</h1>
             </Link>
           ))}
         </div>
