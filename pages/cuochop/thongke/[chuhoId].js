@@ -15,6 +15,9 @@ import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import { ChevronDownIcon } from "../../../components/icons";
 import Transition from "../../../components/common/Transition";
+import moment from "moment";
+import { fetchAPI } from "../../../utils";
+import { getSession } from "next-auth/react";
 
 ChartJS.register(
   CategoryScale,
@@ -26,7 +29,7 @@ ChartJS.register(
   ArcElement
 );
 
-export default function ThongKePage() {
+export default function ThongKePage({ participantDetail, listMeetings }) {
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -63,11 +66,11 @@ export default function ThongKePage() {
         <div className="grid grid-cols-2 gap-x-20 pb-10 border-b">
           <div className="space-y-3">
             <h1 className="text-gray-500">Họ và tên chủ hộ</h1>
-            <h1>Hà Thị Tú</h1>
+            <h1>{participantDetail.hoTenChuHo}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Địa chỉ</h1>
-            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+            <h1>{participantDetail.diaChi}</h1>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-10">
@@ -98,7 +101,7 @@ export default function ThongKePage() {
             ))}
           </Tab.List>
           <Tab.Panels>
-            {cuochopFakes.map((meetings) => (
+            {listMeetings.map((meetings) => (
               <Tab.Panel key={meetings.length}>
                 <div className="grid grid-cols-6 gap-5 text-gray-500">
                   <h1>Người tạo</h1>
@@ -112,10 +115,10 @@ export default function ThongKePage() {
                     className="grid grid-cols-6 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
                     key={item.id}
                   >
-                    <h1>{item.creator}</h1>
-                    <h1 className="col-span-2">{item.title}</h1>
-                    <h1>{item.time}</h1>
-                    <h1 className="col-span-2">{item.address}</h1>
+                    <h1>{item.nguoiTao}</h1>
+                    <h1 className="col-span-2">{item.tieuDe}</h1>
+                    <h1>{moment(item.thoiGian).format("hh:mm DD-MM-YYYY")}</h1>
+                    <h1 className="col-span-2">{item.diaDiem}</h1>
                   </Link>
                 ))}
               </Tab.Panel>
@@ -128,6 +131,37 @@ export default function ThongKePage() {
 }
 
 ThongKePage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = getSession(context);
+  const { chuhoId } = context.query;
+
+  try {
+    const { result: participantDetail } = await fetchAPI(
+      `/api/v1/cuochop/thongkenguoithamgia/${chuhoId}`,
+      {
+        token: session.token,
+        params: {
+          years: 1,
+        },
+      }
+    );
+
+    var listMeetings = [];
+    listMeetings.push(participantDetail.cuocHopThamGia);
+    listMeetings.push(participantDetail.cuocHopVangCoLyDo);
+    listMeetings.push(participantDetail.cuocHopVangKhongLyDo);
+
+    return {
+      props: { participantDetail, listMeetings },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { participantDetail: {}, listMeetings: [] },
+    };
+  }
+}
 
 const data = {
   labels: [
