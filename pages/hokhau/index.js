@@ -43,15 +43,11 @@ export default function HoKhauPage({ hoKhaus }) {
 HoKhauPage.auth = true;
 
 export async function getServerSideProps(context) {
-  const getHoKhauUrl = "/api/v1/hokhau";
   const session = await getSession(context);
 
   try {
-    const res = await fetchAPI(getHoKhauUrl, {
-      method: "GET",
-      body: {},
+    const res = await fetchAPI("/api/v1/hokhau", {
       token: session.token,
-      params: {},
     });
 
     const hoKhaus = res.result.content;
