@@ -99,6 +99,8 @@ export default function EditCuochopPage() {
   );
 }
 
+EditCuochopPage.auth = true;
+
 const chuhoFakes = [
   { id: 1, name: "Ha thi Tu", invited: true },
   { id: 1, name: "Ha thi Tu", invited: true },

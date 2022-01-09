@@ -64,3 +64,4 @@ export default function AddTamtruPage() {
     </BaseLayout>
   );
 }
+AddTamtruPage.auth = true;

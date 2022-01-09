@@ -55,6 +55,7 @@ export default function CuochopPage() {
     </BaseLayout>
   );
 }
+CuochopPage.auth = true;
 
 const cuochopFakes = [
   {

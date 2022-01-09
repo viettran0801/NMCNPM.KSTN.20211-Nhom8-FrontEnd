@@ -82,6 +82,8 @@ export default function CuochopDetailpage() {
   );
 }
 
+CuochopDetailpage.auth = true;
+
 const personFakes = [
   {
     id: 1,

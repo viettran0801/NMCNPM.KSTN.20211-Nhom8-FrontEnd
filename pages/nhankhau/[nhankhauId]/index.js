@@ -112,3 +112,5 @@ export default function NhankhauDetailpage() {
     </BaseLayout>
   );
 }
+
+NhankhauDetailpage.auth = true;

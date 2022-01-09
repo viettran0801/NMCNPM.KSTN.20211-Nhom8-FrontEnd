@@ -64,3 +64,5 @@ export default function AddTamvangPage() {
     </BaseLayout>
   );
 }
+
+AddTamvangPage.auth = true;

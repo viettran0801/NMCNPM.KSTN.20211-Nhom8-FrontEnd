@@ -113,3 +113,4 @@ export default function EditNhanKhauPage() {
     </BaseLayout>
   );
 }
+EditNhanKhauPage.auth = true;

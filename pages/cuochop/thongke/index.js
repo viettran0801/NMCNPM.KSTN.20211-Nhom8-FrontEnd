@@ -103,6 +103,8 @@ export default function ThongKePage() {
   );
 }
 
+ThongKePage.auth = true;
+
 const data = {
   labels: [
     "January",

@@ -39,6 +39,8 @@ export default function HoKhauPage() {
   );
 }
 
+HoKhauPage.auth = true;
+
 const hokhauFakes = [
   {
     id: "0001",

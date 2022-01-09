@@ -46,7 +46,7 @@ export default function TamtruPage() {
     </BaseLayout>
   );
 }
-
+TamtruPage.auth = true;
 const tamtruFakes = [
   {
     id: "0001",

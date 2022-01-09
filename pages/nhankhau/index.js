@@ -34,7 +34,7 @@ export default function NhankhauPage() {
     </BaseLayout>
   );
 }
-
+NhankhauPage.auth = true;
 const nhankhauFakes = [
   {
     id: "0001",
