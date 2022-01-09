@@ -8,8 +8,8 @@ import moment from "moment";
 export default function CuochopPage({ dataMeetings }) {
   return (
     <BaseLayout>
-      <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
-        <div className="flex justify-between items-center pb-10 border-b">
+      <div className="m-5 rounded-2xl bg-white p-5 space-y-10">
+        <div className="flex justify-between items-center pb-5 border-b">
           <h1 className="text-xl">Danh sách cuộc họp</h1>
           <div className="flex space-x-3">
             <Link
