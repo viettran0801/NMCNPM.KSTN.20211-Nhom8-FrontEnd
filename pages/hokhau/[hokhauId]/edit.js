@@ -5,8 +5,10 @@ import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
 import AddNhanKhauModel from "../../../components/nhankhau/AddNhanKhauModel";
 import { TrashIcon } from "../../../components/icons";
+import { getSession } from "next-auth/react";
+import { fetchAPI } from "../../../utils";
 
-export default function AddHoKhauPage() {
+export default function AddHoKhauPage({ hoKhau }) {
   const router = useRouter();
   const { hokhauId } = router.query;
   return (
@@ -23,9 +25,9 @@ export default function AddHoKhauPage() {
         </div>
         <Formik
           initialValues={{
-            location: "123 đường A, phố B, huyện C, tỉnh D",
-            name: "Hà Thị Tú",
-            identityNumber: "123456789",
+            diaChi: hoKhau.diaChi,
+            hoTenChuHo: hoKhau.hoTenChuHo,
+            cccdChuHo: hoKhau.cccdChuHo,
           }}
           validate={(values) => {
             const errors = {};
@@ -38,10 +40,10 @@ export default function AddHoKhauPage() {
         >
           {({ isSubmitting }) => (
             <Form className="grid grid-cols-2 gap-x-20 gap-y-10">
-              <Input label="Họ và tên chủ hộ" name="name" />
-              <Input label="Số CMND/CCCD của chủ hộ" name="identityNumber" />
+              <Input label="Họ và tên chủ hộ" name="hoTenChuHo" />
+              <Input label="Số CMND/CCCD của chủ hộ" name="cccdChuHo" />
               <div className=" col-span-2">
-                <Input label="Địa chỉ" name="location" />
+                <Input label="Địa chỉ" name="diaChi" />
               </div>
 
               <div className="space-y-10 col-span-2">
@@ -56,14 +58,14 @@ export default function AddHoKhauPage() {
                     <h1>Quan hệ với chủ hộ</h1>
                     <h1>Xóa</h1>
                   </div>
-                  {thanhvienFakes.map((person) => (
+                  {hoKhau.nhanKhaus.map((person) => (
                     <div
                       className="grid grid-cols-4 gap-10 py-3 hover:bg-gray-50 duration-100"
-                      key={person.name}
+                      key={person.id}
                     >
-                      <h1>{person.name}</h1>
-                      <h1>{person.bod}</h1>
-                      <h1>{person.relation}</h1>
+                      <h1>{person.hoVaTen}</h1>
+                      <h1>{person.ngaySinh}</h1>
+                      <h1>{person.quanHeVoiChuHo}</h1>
                       <button className="text-red-500">
                         <TrashIcon />
                       </button>
@@ -92,25 +94,23 @@ export default function AddHoKhauPage() {
   );
 }
 AddHoKhauPage.auth = true;
-const thanhvienFakes = [
-  {
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-  {
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-  {
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-  {
-    name: "Ha thi Tu",
-    bod: "2020/1/1",
-    relation: "Con",
-  },
-];
+
+export async function getServerSideProps(context) {
+  const { hokhauId } = context.query;
+  const session = await getSession(context);
+
+  try {
+    const { result: hoKhau } = await fetchAPI(`/api/v1/hokhau/${hokhauId}`, {
+      token: session.token,
+    });
+
+    return {
+      props: { hoKhau },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { hoKhau: {} },
+    };
+  }
+}
