@@ -44,10 +44,14 @@ export default function CuochopPage({ dataMeetings }) {
               className="grid grid-cols-9 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
-              <h1>{item.id}</h1>
+              <h1>
+                {new Date(item.thoiGian) < Date.now()
+                  ? "Đã diễn ra"
+                  : "Chưa diễn ra"}
+              </h1>
               <h1>{item.nguoiTao}</h1>
               <h1 className="col-span-2">{item.tieuDe}</h1>
-              <h1>{moment(item.thoiGian).format("DD-MM-YYYY")}</h1>
+              <h1>{moment(item.thoiGian).format("hh:mm  DD-MM-YYYY")}</h1>
               <h1 className="col-span-2">{item.diaDiem}</h1>
               <h1>{item.thamGia}</h1>
               <h1>{item.vangMat}</h1>

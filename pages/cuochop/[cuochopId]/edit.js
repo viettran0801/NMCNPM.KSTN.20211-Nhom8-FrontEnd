@@ -3,8 +3,11 @@ import { useRouter } from "next/router";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
-
-export default function EditCuochopPage() {
+import { getSession } from "next-auth/react";
+import moment from "moment";
+import { fetchAPI } from "../../../utils";
+export default function EditCuochopPage({ meeting, attendances }) {
+  console.log(meeting);
   const router = useRouter();
   const { cuochopId } = router.query;
   return (
@@ -21,11 +24,10 @@ export default function EditCuochopPage() {
         </div>
         <Formik
           initialValues={{
-            location: "123 đường A, phố B, huyện C, tỉnh D",
-            title: "Họp phòng chống ấu dâm",
-            time: "13:10 12/12/1222",
-            content:
-              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s,",
+            diaDiem: meeting.diaDiem,
+            tieuDe: meeting.tieuDe,
+            thoiGian: moment(meeting.thoiGian).format("hh:mm DD-MM-YYYY"),
+            noiDung: meeting.noiDung,
           }}
           validate={(values) => {
             const errors = {};
@@ -33,19 +35,19 @@ export default function EditCuochopPage() {
           }}
           onSubmit={(values, { setSubmitting }) => {
             setSubmitting(false);
-            router.push(`/cuochop/1`);
+            router.push(`/cuochop/${meeting.id}`);
           }}
         >
           {({ isSubmitting }) => (
             <Form className="space-y-10">
-              <Input label="Tiêu đề" name="title" />
+              <Input label="Tiêu đề" name="tieuDe" />
               <div className="grid grid-cols-3 gap-10">
-                <Input label="Thời gian" name="time" />
+                <Input label="Thời gian" name="thoiGian" />
                 <div className="col-span-2">
-                  <Input label="Địa điểm" name="location" />
+                  <Input label="Địa điểm" name="diaDiem" />
                 </div>
               </div>
-              <Input label="Nội dung" name="content" type="textarea" />
+              <Input label="Nội dung" name="noiDung" type="textarea" />
               <div className="space-y-10">
                 <div className="flex space-x-3 items-center pb-10 border-b">
                   <h1 className="text-lg">Danh sách tham gia</h1>
@@ -67,12 +69,12 @@ export default function EditCuochopPage() {
                     <h1>Họ và tên</h1>
                     <h1>Mời</h1>
                   </div>
-                  {chuhoFakes.map((person) => (
+                  {attendances.map((person) => (
                     <div
                       className="grid grid-cols-2 gap-10 py-3 hover:bg-gray-50 duration-100"
-                      key={person.id}
+                      key={person.hoKhau}
                     >
-                      <h1>{person.name}</h1>
+                      <h1>{person.hoTenChuHo}</h1>
                       <input
                         type="checkbox"
                         className="ml-2"
@@ -100,6 +102,32 @@ export default function EditCuochopPage() {
 }
 
 EditCuochopPage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { cuochopId } = context.query;
+  try {
+    const { result: meeting } = await fetchAPI(`/api/v1/cuochop/${cuochopId}`, {
+      token: session.token,
+    });
+
+    const { result: attendances } = await fetchAPI(
+      `/api/v1/cuochop/${cuochopId}/diemdanh`,
+      {
+        token: session.token,
+      }
+    );
+
+    return {
+      props: { meeting, attendances },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { meeting: {}, attendances: {} },
+    };
+  }
+}
 
 const chuhoFakes = [
   { id: 1, name: "Ha thi Tu", invited: true },
