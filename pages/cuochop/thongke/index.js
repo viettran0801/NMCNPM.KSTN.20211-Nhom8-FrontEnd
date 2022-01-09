@@ -16,6 +16,9 @@ import { Menu } from "@headlessui/react";
 import Transition from "../../../components/common/Transition";
 
 import { ChevronDownIcon } from "../../../components/icons";
+import moment from "moment";
+import { fetchAPI } from "../../../utils";
+import { getSession } from "next-auth/react";
 
 ChartJS.register(
   CategoryScale,
@@ -27,7 +30,7 @@ ChartJS.register(
   ArcElement
 );
 
-export default function ThongKePage() {
+export default function ThongKePage({ participants }) {
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -83,18 +86,18 @@ export default function ThongKePage() {
             <h1>Vắng có lý do</h1>
             <h1>Vắng không có lý do</h1>
           </div>
-          {familyFakes.map((item) => (
+          {participants.map((item) => (
             <Link
               href={`/cuochop/thongke/${item.id}`}
               className="grid grid-cols-8 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
               <h1>{item.id}</h1>
-              <h1 className="col-span-2">{item.name}</h1>
-              <h1 className="col-span-2">{item.address}</h1>
-              <h1>{item.attend}</h1>
-              <h1>{item.absentWithReason}</h1>
-              <h1>{item.asbentWithoutReason}</h1>
+              <h1 className="col-span-2">{item.hoTenChuHo}</h1>
+              <h1 className="col-span-2">{item.diaChi}</h1>
+              <h1>{item.thamGia}</h1>
+              <h1>{item.vangCoLyDo}</h1>
+              <h1>{item.vangKhongLyDo}</h1>
             </Link>
           ))}
         </div>
@@ -104,6 +107,29 @@ export default function ThongKePage() {
 }
 
 ThongKePage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  try {
+    const { result: participants } = await fetchAPI(
+      `/api/v1/cuochop/thongkenguoithamgia`,
+      {
+        token: session.token,
+        params: {
+          years: 1,
+        },
+      }
+    );
+    return {
+      props: { participants },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: {},
+    };
+  }
+}
 
 const data = {
   labels: [
