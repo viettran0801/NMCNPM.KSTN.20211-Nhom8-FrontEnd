@@ -47,6 +47,8 @@ export default function TamVangPage() {
   );
 }
 
+TamVangPage.auth = true;
+
 const tamvangFakes = [
   {
     id: "0001",

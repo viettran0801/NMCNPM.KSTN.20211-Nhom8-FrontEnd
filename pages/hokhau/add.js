@@ -86,6 +86,8 @@ export default function AddHoKhauPage() {
   );
 }
 
+AddHoKhauPage.auth = true;
+
 const thanhvienFakes = [
   {
     name: "Ha thi Tu",

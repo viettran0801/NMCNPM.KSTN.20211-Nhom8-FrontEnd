@@ -1,29 +1,30 @@
 import { getSession } from "next-auth/react";
 import BaseLayout from "../components/layouts/BaseLayout";
+import { fetchAPI } from "../utils";
 
-export default function Home() {
+export default function Home({ metadata, recentActivities, meetings }) {
   return (
     <BaseLayout>
       <div className="p-10 space-y-40">
         <div className="grid grid-cols-4 gap-5">
           <div className="bg-white rounded-xl p-5 space-y-5">
             <h1>Số lượng hộ khẩu</h1>
-            <h1 className="font-medium text-2xl">78</h1>
+            <h1 className="font-medium text-2xl">{metadata.soHoKhau}</h1>
             <div className="h-1 bg-blue-700 w-full"></div>
           </div>
           <div className="bg-white rounded-xl p-5 space-y-5">
             <h1>Số lượng nhân khẩu</h1>
-            <h1 className="font-medium text-2xl">78</h1>
+            <h1 className="font-medium text-2xl">{metadata.soNhanKhau}</h1>
             <div className="h-1 bg-yellow-500 w-full"></div>
           </div>
           <div className="bg-white rounded-xl p-5 space-y-5">
             <h1>Số lượng nhân khẩu tạm vắng</h1>
-            <h1 className="font-medium text-2xl">78</h1>
+            <h1 className="font-medium text-2xl">{metadata.soTamVang}</h1>
             <div className="h-1 bg-green-500 w-full"></div>
           </div>
           <div className="bg-white rounded-xl p-5 space-y-5">
             <h1>Số lượng nhân khẩu tạm trú</h1>
-            <h1 className="font-medium text-2xl">78</h1>
+            <h1 className="font-medium text-2xl">{metadata.soTamTru}</h1>
             <div className="h-1 bg-purple-500 w-full"></div>
           </div>
         </div>
@@ -40,13 +41,17 @@ export default function Home() {
                 <h1 className="col-span-2">Thời gian</h1>
                 <h1 className="col-span-2">Địa điểm</h1>
               </div>
-              {meetingFakes.map((meeting) => (
-                <div className="grid grid-cols-8 gap-5" key={meeting.creator}>
-                  <h1>{meeting.status}</h1>
-                  <h1>{meeting.creator}</h1>
-                  <h1 className="col-span-2">{meeting.title}</h1>
-                  <h1 className="col-span-2">{meeting.time}</h1>
-                  <h1 className="col-span-2">{meeting.location}</h1>
+              {meetings.map((meeting) => (
+                <div className="grid grid-cols-8 gap-5" key={meeting.id}>
+                  <h1>
+                    {meeting.thoiGian < Date.now()
+                      ? "Đã diễn ra"
+                      : "Chưa diễn ra"}
+                  </h1>
+                  <h1>{meeting.nguoiTao}</h1>
+                  <h1 className="col-span-2">{meeting.tieuDe}</h1>
+                  <h1 className="col-span-2">{meeting.thoiGian}</h1>
+                  <h1 className="col-span-2">{meeting.diaDiem}</h1>
                 </div>
               ))}
             </div>
@@ -56,7 +61,7 @@ export default function Home() {
               <h1 className="text-xl">Hoạt động gần đây</h1>
             </div>
             <div className="space-y-5">
-              {recentActivityFakes.map((act) => (
+              {recentActivities.map((act) => (
                 <div className="flex space-x-3" key={act.id}>
                   <div className="flex space-x-3 items-center">
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
@@ -64,7 +69,7 @@ export default function Home() {
                       {act.time}
                     </h1>
                   </div>
-                  <h1>{act.desciption}</h1>
+                  <h1>{act.mess}</h1>
                 </div>
               ))}
             </div>
@@ -79,78 +84,35 @@ Home.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  return {
-    props: {},
-  };
+  try {
+    const { result: metadata } = await fetchAPI("/api/v1/thongso", {
+      token: session.token,
+    });
+    const {
+      result: { content: recentActivities },
+    } = await fetchAPI("/api/v1/hoatdong", {
+      params: {
+        page: 0,
+        size: 5,
+      },
+      token: session.token,
+    });
+    const {
+      result: { content: meetings },
+    } = await fetchAPI("/api/v1/cuochop", {
+      params: {
+        page: 0,
+        size: 5,
+      },
+      token: session.token,
+    });
+    return {
+      props: { metadata, recentActivities, meetings },
+    };
+  } catch (err) {
+    console.log(err.message);
+    return {
+      props: {},
+    };
+  }
 }
-
-const recentActivityFakes = [
-  {
-    id: 1,
-    time: "5 phút trước",
-    desciption: "Thêm hộ khẩu mớ",
-  },
-  {
-    id: 2,
-    time: "5 phút trước",
-    desciption: "Thêm hộ khẩu mớ asdasdasdasd dsd sd sd s",
-  },
-  {
-    id: 3,
-    time: "5 phút trước",
-    desciption: "Thêm hộ khẩu mớ",
-  },
-  {
-    id: 4,
-    time: "5 phút trước",
-    desciption: "Thêm hộ khẩu mớ",
-  },
-  {
-    id: 5,
-    time: "5 phút trước",
-    desciption: "Thêm hộ khẩu mớ",
-  },
-  {
-    id: 6,
-    time: "5 phút trước",
-    desciption: "Thêm hộ khẩu mớ",
-  },
-];
-
-const meetingFakes = [
-  {
-    status: "Đang họp",
-    creator: "Minh thu",
-    title: "Họp tổng kết tháng 11",
-    time: "13:00 31/11/2021",
-    location: "Nhà văn hóa thông thôn, đường A",
-  },
-  {
-    status: "Đang họp",
-    creator: "Minh thu",
-    title: "Họp tổng kết tháng 11",
-    time: "13:00 31/11/2021",
-    location: "Nhà văn hóa thông thôn, đường A",
-  },
-  {
-    status: "Đang họp",
-    creator: "Minh thu",
-    title: "Họp tổng kết tháng 11",
-    time: "13:00 31/11/2021",
-    location: "Nhà văn hóa thông thôn, đường A",
-  },
-  {
-    status: "Đang họp",
-    creator: "Minh thu",
-    title: "Họp tổng kết tháng 11",
-    time: "13:00 31/11/2021",
-    location: "Nhà văn hóa thông thôn, đường A",
-  },
-  {
-    status: "Đang họp",
-    creator: "Minh thu",
-    title: "Họp tổng kết tháng 11",
-    time: "13:00 31/11/2021",
-    location: "Nhà văn hóa thông thôn, đường A",
-  },
-];

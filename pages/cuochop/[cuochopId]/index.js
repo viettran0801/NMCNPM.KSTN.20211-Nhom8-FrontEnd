@@ -123,21 +123,5 @@ export async function getServerSideProps(context) {
   }
 }
 
-const personFakes = [
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: true,
-  },
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: true,
-  },
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: false,
-    reason: "Bị bắt vì ấu dâm",
-  },
-];
+CuochopDetailpage.auth = true;
+

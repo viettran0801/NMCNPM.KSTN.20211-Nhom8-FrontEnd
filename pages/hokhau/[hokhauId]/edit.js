@@ -91,7 +91,7 @@ export default function AddHoKhauPage() {
     </BaseLayout>
   );
 }
-
+AddHoKhauPage.auth = true;
 const thanhvienFakes = [
   {
     name: "Ha thi Tu",

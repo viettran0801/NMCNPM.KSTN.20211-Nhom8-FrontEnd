@@ -72,7 +72,7 @@ export default function HoKhauDetailpage() {
     </BaseLayout>
   );
 }
-
+HoKhauDetailpage.auth = true;
 const thanhvienFakes = [
   {
     id: 1,

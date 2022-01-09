@@ -62,3 +62,5 @@ export default function TamvangDetailpage() {
     </BaseLayout>
   );
 }
+
+TamvangDetailpage.auth = true;

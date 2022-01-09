@@ -71,3 +71,5 @@ export default function EditTamvangPage() {
     </BaseLayout>
   );
 }
+
+EditTamvangPage.auth = true;

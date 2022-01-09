@@ -57,6 +57,7 @@ export default function CuochopPage({ dataMeetings }) {
     </BaseLayout>
   );
 }
+CuochopPage.auth = true;
 
 const getAllMeetingUrl = "/api/v1/cuochop";
 
