@@ -1,8 +1,10 @@
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
+import { fetchAPI, parseInstantToDateTime } from "../../utils";
+import { getSession } from "next-auth/react";
 
-export default function CuochopPage() {
+export default function CuochopPage({ dataMeetings }) {
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -35,19 +37,19 @@ export default function CuochopPage() {
             <h1>Tham gia</h1>
             <h1>Vắng mặt</h1>
           </div>
-          {cuochopFakes.map((item) => (
+          {dataMeetings.map((item) => (
             <Link
               href={`/cuochop/${item.id}`}
               className="grid grid-cols-9 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
-              <h1>{item.status}</h1>
-              <h1>{item.creator}</h1>
-              <h1 className="col-span-2">{item.title}</h1>
-              <h1>{item.time}</h1>
-              <h1 className="col-span-2">{item.address}</h1>
-              <h1>{item.attend}</h1>
-              <h1>{item.absent}</h1>
+              <h1>{item.id}</h1>
+              <h1>{item.nguoiTao}</h1>
+              <h1 className="col-span-2">{item.tieuDe}</h1>
+              <h1>{item.thoiGian}</h1>
+              <h1 className="col-span-2">{item.diaDiem}</h1>
+              <h1>{item.thamGia}</h1>
+              <h1>{item.vangMat}</h1>
             </Link>
           ))}
         </div>
@@ -57,55 +59,33 @@ export default function CuochopPage() {
 }
 CuochopPage.auth = true;
 
-const cuochopFakes = [
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-];
+const getAllMeetingUrl = "/api/v1/cuochop";
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  try {
+    const res = await fetchAPI(getAllMeetingUrl, {
+      method: "GET",
+      body: {},
+      token: session.token,
+      params: {},
+    });
+
+    const dataMeetings = res.result.content;
+    for (let index in dataMeetings) {
+      dataMeetings[index].thoiGian = parseInstantToDateTime(
+        dataMeetings[index].thoiGian
+      );
+    }
+
+    return {
+      props: { dataMeetings: dataMeetings }, // will be passed to the page component as props
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { dataMeetings: [] },
+    };
+  }
+}

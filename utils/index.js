@@ -24,3 +24,21 @@ export async function fetchAPI(
   });
   return res.data;
 }
+
+export function parseInstantToDateTime(time) {
+  const d = new Date(time);
+
+  var datestring = "";
+  if (d.getHours < 10) datestring += "0";
+  datestring += d.getHours() + ":";
+
+  if (d.getMinutes() < 10) datestring += "0";
+  datestring += d.getMinutes() + "\n";
+  if (d.getDate() < 10) datestring += "0";
+  datestring += d.getDate() + "-";
+  if (d.getMonth() < 9) datestring += "0";
+  datestring += d.getMonth() + 1;
+  datestring += "-" + d.getFullYear();
+
+  return datestring;
+}
