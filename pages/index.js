@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/react";
 import BaseLayout from "../components/layouts/BaseLayout";
-import { fetchAPI } from "../utils";
+import { convertTimeAgo, fetchAPI } from "../utils";
 
 export default function Home({ metadata, recentActivities, meetings }) {
   return (
@@ -66,7 +66,7 @@ export default function Home({ metadata, recentActivities, meetings }) {
                   <div className="flex space-x-3 items-center">
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                     <h1 className="min-w-[100px] text-gray-700 italic">
-                      {act.time}
+                      {convertTimeAgo(act.time)}
                     </h1>
                   </div>
                   <h1>{act.mess}</h1>

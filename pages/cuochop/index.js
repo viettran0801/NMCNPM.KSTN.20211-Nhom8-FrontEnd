@@ -1,8 +1,9 @@
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
-import { fetchAPI, parseInstantToDateTime } from "../../utils";
+import { fetchAPI } from "../../utils";
 import { getSession } from "next-auth/react";
+import moment from "moment";
 
 export default function CuochopPage({ dataMeetings }) {
   return (
@@ -46,7 +47,7 @@ export default function CuochopPage({ dataMeetings }) {
               <h1>{item.id}</h1>
               <h1>{item.nguoiTao}</h1>
               <h1 className="col-span-2">{item.tieuDe}</h1>
-              <h1>{item.thoiGian}</h1>
+              <h1>{moment(item.thoiGian).format("DD-MM-YYYY")}</h1>
               <h1 className="col-span-2">{item.diaDiem}</h1>
               <h1>{item.thamGia}</h1>
               <h1>{item.vangMat}</h1>
@@ -59,28 +60,18 @@ export default function CuochopPage({ dataMeetings }) {
 }
 CuochopPage.auth = true;
 
-const getAllMeetingUrl = "/api/v1/cuochop";
-
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
   try {
-    const res = await fetchAPI(getAllMeetingUrl, {
-      method: "GET",
-      body: {},
+    const {
+      result: { content: dataMeetings },
+    } = await fetchAPI("/api/v1/cuochop", {
       token: session.token,
-      params: {},
     });
 
-    const dataMeetings = res.result.content;
-    for (let index in dataMeetings) {
-      dataMeetings[index].thoiGian = parseInstantToDateTime(
-        dataMeetings[index].thoiGian
-      );
-    }
-
     return {
-      props: { dataMeetings: dataMeetings }, // will be passed to the page component as props
+      props: { dataMeetings }, // will be passed to the page component as props
     };
   } catch (err) {
     console.error(err);

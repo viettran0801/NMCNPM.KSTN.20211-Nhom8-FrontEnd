@@ -1,5 +1,11 @@
 import axios from "axios";
 import qs from "qs";
+import TimeAgo from "javascript-time-ago";
+import vi from "javascript-time-ago/locale/vi.json";
+
+TimeAgo.addDefaultLocale(vi);
+const timeAgo = new TimeAgo("vi");
+
 const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
 export async function fetchAPI(
@@ -23,6 +29,10 @@ export async function fetchAPI(
     },
   });
   return res.data;
+}
+
+export function convertTimeAgo(time) {
+  return timeAgo.format(new Date(time), "round");
 }
 
 export function parseInstantToDateTime(time) {
