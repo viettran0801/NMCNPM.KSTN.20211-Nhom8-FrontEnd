@@ -3,8 +3,11 @@ import { useRouter } from "next/router";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import Input from "../../components/common/Input";
+import { getSession } from "next-auth/react";
+import moment from "moment";
+import { fetchAPI } from "../../utils";
 
-export default function AddCuochopPage() {
+export default function AddCuochopPage({ inviters }) {
   const router = useRouter();
   return (
     <BaseLayout>
@@ -65,12 +68,12 @@ export default function AddCuochopPage() {
                     <h1>Họ và tên</h1>
                     <h1>Mời</h1>
                   </div>
-                  {chuhoFakes.map((person) => (
+                  {inviters.map((person) => (
                     <div
                       className="grid grid-cols-2 gap-10 py-3 hover:bg-gray-50 duration-100"
                       key={person.id}
                     >
-                      <h1>{person.name}</h1>
+                      <h1>{person.hoTenChuHo}</h1>
                       <input type="checkbox" className="ml-2" />
                     </div>
                   ))}
@@ -94,6 +97,25 @@ export default function AddCuochopPage() {
 }
 
 AddCuochopPage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  try {
+    const { result: inviters } = await fetchAPI(`/api/v1/cuochop/danhsachmoi`, {
+      token: session.token,
+    });
+
+    return {
+      props: { inviters },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: { intviters: {} },
+    };
+  }
+}
 
 const chuhoFakes = [
   { id: 1, name: "Ha thi Tu" },
