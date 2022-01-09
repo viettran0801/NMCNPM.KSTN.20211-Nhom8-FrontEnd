@@ -1,29 +1,30 @@
 import { getSession } from "next-auth/react";
 import BaseLayout from "../components/layouts/BaseLayout";
+import { fetchAPI } from "../utils";
 
-export default function Home() {
+export default function Home({ metadata }) {
   return (
     <BaseLayout>
       <div className="p-10 space-y-40">
         <div className="grid grid-cols-4 gap-5">
           <div className="bg-white rounded-xl p-5 space-y-5">
             <h1>Số lượng hộ khẩu</h1>
-            <h1 className="font-medium text-2xl">78</h1>
+            <h1 className="font-medium text-2xl">{metadata.soHoKhau}</h1>
             <div className="h-1 bg-blue-700 w-full"></div>
           </div>
           <div className="bg-white rounded-xl p-5 space-y-5">
             <h1>Số lượng nhân khẩu</h1>
-            <h1 className="font-medium text-2xl">78</h1>
+            <h1 className="font-medium text-2xl">{metadata.soNhanKhau}</h1>
             <div className="h-1 bg-yellow-500 w-full"></div>
           </div>
           <div className="bg-white rounded-xl p-5 space-y-5">
             <h1>Số lượng nhân khẩu tạm vắng</h1>
-            <h1 className="font-medium text-2xl">78</h1>
+            <h1 className="font-medium text-2xl">{metadata.soTamVang}</h1>
             <div className="h-1 bg-green-500 w-full"></div>
           </div>
           <div className="bg-white rounded-xl p-5 space-y-5">
             <h1>Số lượng nhân khẩu tạm trú</h1>
-            <h1 className="font-medium text-2xl">78</h1>
+            <h1 className="font-medium text-2xl">{metadata.soTamTru}</h1>
             <div className="h-1 bg-purple-500 w-full"></div>
           </div>
         </div>
@@ -79,9 +80,18 @@ Home.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  return {
-    props: {},
-  };
+  try {
+    const { result: metadata } = await fetchAPI("/api/v1/thongso", {
+      token: session.token,
+    });
+    return {
+      props: { metadata },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
 }
 
 const recentActivityFakes = [
