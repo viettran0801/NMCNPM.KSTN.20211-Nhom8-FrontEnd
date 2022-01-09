@@ -75,6 +75,8 @@ export default function Home() {
   );
 }
 
+Home.auth = true;
+
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   return {
