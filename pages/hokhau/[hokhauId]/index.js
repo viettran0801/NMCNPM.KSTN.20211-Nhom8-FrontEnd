@@ -3,7 +3,7 @@ import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import { getSession } from "next-auth/react";
-import { fetchAPI, parseInstantToDateTime } from "../../../utils";
+import { fetchAPI, parseInstantToDate } from "../../../utils";
 export default function HoKhauDetailpage({ hoKhau }) {
   const { hokhauId } = useRouter().query;
 
@@ -64,7 +64,7 @@ export default function HoKhauDetailpage({ hoKhau }) {
                 >
                   {person.hoVaTen}
                 </Link>
-                <h1>{parseInstantToDateTime(person.ngaySinh)}</h1>
+                <h1>{parseInstantToDate(person.ngaySinh)}</h1>
                 <h1>{person.quanHeVoiChuHo}</h1>
               </div>
             ))}
