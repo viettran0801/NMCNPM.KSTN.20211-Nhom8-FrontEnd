@@ -4,13 +4,17 @@ import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
 import { TrashIcon } from "../../../components/icons";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { fetchAPI } from "../../../utils";
 import moment from "moment";
+import { useState } from "react";
+import { Field } from "formik";
 
 export default function EditNhanKhauPage({ nhanKhau }) {
   const router = useRouter();
   const { nhankhauId } = router.query;
+  const [errorMessage, setErrorMessage] = useState("");
+  const { data: session } = useSession();
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -28,7 +32,7 @@ export default function EditNhanKhauPage({ nhanKhau }) {
             hoVaTen: nhanKhau.hoVaTen,
             hoVaTenKhac: nhanKhau.hoVaTenKhac,
             ngaySinh: moment(nhanKhau.ngaySinh).format("YYYY-MM-DD"),
-            gender: "Nam",
+            gioiTinh: nhanKhau.gioiTinh,
             cccd: nhanKhau.cccd,
             soHoChieu: nhanKhau.soHoChieu,
             nguyenQuan: nhanKhau.nguyenQuan,
@@ -46,9 +50,20 @@ export default function EditNhanKhauPage({ nhanKhau }) {
             const errors = {};
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            setSubmitting(false);
-            closeModal();
+          onSubmit={async (values) => {
+            try {
+              await fetchAPI(`/api/v1/nhankhau/${nhankhauId}`, {
+                method: "PUT",
+                token: session.token,
+                body: {
+                  ...values,
+                  ngaySinh: moment(values.ngaySinh + "Z").toISOString(),
+                },
+              });
+              router.push(`/nhankhau/${nhankhauId}`);
+            } catch (err) {
+              setErrorMessage(err.message);
+            }
           }}
         >
           {({ isSubmitting }) => (
@@ -57,8 +72,19 @@ export default function EditNhanKhauPage({ nhanKhau }) {
                 <Input label="Họ và tên" name="hoVaTen" />
                 <Input label="Tên gọi khác (nếu có)" name="hoVaTenKhac" />
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center space-x-40">
                 <Input label="Ngày sinh" name="ngaySinh" type="date" />
+                <div className="flex items-center space-x-10 ">
+                  <label>Giới tinh</label>
+                  <label className="space-x-3">
+                    <Field type="radio" name="gioiTinh" value="Nam" />
+                    <span>Nam</span>
+                  </label>
+                  <label className="space-x-3">
+                    <Field type="radio" name="gioiTinh" value="Nữ" />
+                    <span>Nữ</span>
+                  </label>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-10">
                 <Input label="Số CMND/CCCD" name="cccd" />
@@ -96,6 +122,7 @@ export default function EditNhanKhauPage({ nhanKhau }) {
                   <Input label="Nơi làm việc" name="noiLamViec" />
                 </div>
               </div>
+              <p className="text-red-700">{errorMessage}</p>
               <div>
                 <button
                   type="submit"
@@ -108,10 +135,6 @@ export default function EditNhanKhauPage({ nhanKhau }) {
             </Form>
           )}
         </Formik>
-        <button className="px-3 py-2 bg-red-700 text-white rounded-lg hover:scale-105 duration-300 flex space-x-3">
-          <TrashIcon />
-          <span>Xóa nhân khẩu</span>
-        </button>
       </div>
     </BaseLayout>
   );
@@ -129,7 +152,6 @@ export async function getServerSideProps(context) {
         token: session.token,
       }
     );
-    console.log(nhanKhau);
 
     return {
       props: { nhanKhau },
