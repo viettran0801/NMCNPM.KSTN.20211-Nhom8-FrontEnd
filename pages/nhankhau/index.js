@@ -1,14 +1,16 @@
 import { getSession } from "next-auth/react";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
-import { fetchAPI } from "../../utils";
 import Paginate from "../../components/common/Paginate";
+import Search from "../../components/common/Search";
+import { fetchAPI } from "../../utils";
 export default function NhankhauPage({ nhanKhaus, totalPages }) {
   return (
     <BaseLayout>
       <div className="m-5 rounded-2xl bg-white py-10 px-5 space-y-10">
         <div className="flex justify-between items-center pb-10 border-b">
           <h1 className="text-xl">Danh sách nhân khẩu</h1>
+          <Search />
         </div>
         <div className="">
           <div className="grid grid-cols-7 gap-5 text-gray-500">
@@ -43,14 +45,14 @@ NhankhauPage.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  const { page = 1 } = context.query;
+  const { page = 1, search = "" } = context.query;
   try {
     const {
       result: { content: nhanKhaus },
       result: { totalPages },
     } = await fetchAPI("/api/v1/nhankhau", {
       token: session.token,
-      params: { page: page - 1, size: 5, sort: "id,asc" },
+      params: { page: page - 1, size: 5, sort: "id,asc", keyword: search },
     });
 
     return {
