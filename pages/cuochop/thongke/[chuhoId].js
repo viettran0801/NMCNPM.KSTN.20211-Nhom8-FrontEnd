@@ -11,16 +11,16 @@ import {
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
 import { Tab, Menu } from "@headlessui/react";
-import BaseLayout from "../../../components/layouts/BaseLayout";
-import Link from "../../../components/common/Link";
-import { ChevronDownIcon } from "../../../components/icons";
-import Transition from "../../../components/common/Transition";
-import { fetchAPI } from "../../../utils";
 import { getSession } from "next-auth/react";
 import Moment from "moment";
 import { extendMoment } from "moment-range";
 import { split } from "moment-range-split";
 import { useRouter } from "next/router";
+import { fetchAPI } from "../../../utils";
+import Link from "../../../components/common/Link";
+import BaseLayout from "../../../components/layouts/BaseLayout";
+import { ChevronDownIcon } from "../../../components/icons";
+import Transition from "../../../components/common/Transition";
 const moment = extendMoment(Moment);
 
 ChartJS.register(
