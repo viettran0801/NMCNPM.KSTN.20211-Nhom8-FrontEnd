@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
+import moment from "moment";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { getSession } from "next-auth/react";
 import { fetchAPI, parseInstantToDate } from "../../../utils";
 
 export default function NhankhauDetailpage({ nhanKhau }) {
@@ -43,7 +44,7 @@ export default function NhankhauDetailpage({ nhanKhau }) {
           <div className="grid grid-cols-2 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Ngày sinh</h1>
-              <h1>{parseInstantToDate(nhanKhau.ngaySinh)}</h1>
+              <h1>{moment(nhanKhau.ngaySinh).format("DD-MM-YYYY")}</h1>
             </div>
             <div className="space-y-3">
               <h1 className="text-gray-500">Giới tính</h1>
