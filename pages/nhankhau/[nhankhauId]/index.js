@@ -4,7 +4,7 @@ import moment from "moment";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { fetchAPI, parseInstantToDate } from "../../../utils";
+import { fetchAPI } from "../../../utils";
 
 export default function NhankhauDetailpage({ nhanKhau }) {
   const { nhankhauId } = useRouter().query;
