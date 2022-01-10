@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
+import moment from "moment";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import { fetchAPI } from "../../../utils";
-import { getSession } from "next-auth/react";
-import moment from "moment";
 export default function CuochopDetailpage({ meetingDetail, diemDanh }) {
   const { cuochopId } = useRouter().query;
   return (
@@ -109,7 +109,6 @@ export async function getServerSideProps(context) {
       props: { meetingDetail, diemDanh },
     };
   } catch (err) {
-    console.error(err);
     return {
       props: {},
     };
