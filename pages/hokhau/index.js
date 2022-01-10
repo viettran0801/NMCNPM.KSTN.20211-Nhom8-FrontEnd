@@ -52,14 +52,14 @@ HoKhauPage.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  const { page = 1 } = context.query;
+  const { page = 1, search = "" } = context.query;
   try {
     const {
       result: { content: hoKhaus },
       result: { totalPages },
     } = await fetchAPI("/api/v1/hokhau", {
       token: session.token,
-      params: { page: page - 1, size: 5, sort: "id,asc" },
+      params: { page: page - 1, size: 5, sort: "id,asc", keyword: search },
     });
 
     return {
