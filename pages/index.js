@@ -95,28 +95,34 @@ Home.auth = true;
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   try {
-    const { result: metadata } = await fetchAPI("/api/v1/thongso", {
-      token: session.token,
-    });
-    const {
-      result: { content: recentActivities },
-    } = await fetchAPI("/api/v1/hoatdong", {
-      params: {
-        page: 0,
-        size: 5,
+    const [
+      { result: metadata },
+      {
+        result: { content: recentActivities },
       },
-      token: session.token,
-    });
-    const {
-      result: { content: meetings },
-    } = await fetchAPI("/api/v1/cuochop", {
-      params: {
-        page: 0,
-        size: 5,
-        sort: "thoiGian,DESC",
+      {
+        result: { content: meetings },
       },
-      token: session.token,
-    });
+    ] = await Promise.all([
+      fetchAPI("/api/v1/thongso", {
+        token: session.token,
+      }),
+      fetchAPI("/api/v1/hoatdong", {
+        params: {
+          page: 0,
+          size: 5,
+        },
+        token: session.token,
+      }),
+      fetchAPI("/api/v1/cuochop", {
+        params: {
+          page: 0,
+          size: 5,
+          sort: "thoiGian,DESC",
+        },
+        token: session.token,
+      }),
+    ]);
     return {
       props: { metadata, recentActivities, meetings },
     };
