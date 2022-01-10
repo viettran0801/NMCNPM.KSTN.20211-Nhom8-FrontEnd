@@ -1,9 +1,9 @@
+import { getSession } from "next-auth/react";
+import moment from "moment";
+import { fetchAPI } from "../../utils";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
-import { fetchAPI } from "../../utils";
-import { getSession } from "next-auth/react";
-import moment from "moment";
 import Paginate from "../../components/common/Paginate";
 export default function TamtruPage({ tamtrus, totalPages }) {
   return (
@@ -19,7 +19,7 @@ export default function TamtruPage({ tamtrus, totalPages }) {
             <span>Thêm nhân khẩu tạm trú</span>
           </Link>
         </div>
-        <div className="">
+        <div>
           <div className="grid grid-cols-7 gap-5 text-gray-500">
             <h1>ID</h1>
             <h1>Họ tên</h1>
@@ -70,7 +70,6 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (err) {
-    console.log(err.message);
     return {
       props: {},
     };
