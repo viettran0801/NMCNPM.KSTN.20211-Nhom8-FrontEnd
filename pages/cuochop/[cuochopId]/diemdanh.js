@@ -6,8 +6,10 @@ import { Field, Form, Formik } from "formik";
 import moment from "moment";
 import { fetchAPI } from "../../../utils";
 import { getSession } from "next-auth/react";
-export default function CuochopDetailpage({ meeting }) {
+import DiemDanh from "../../../components/diemdanh/DiemDanh";
+export default function CuochopDetailpage({ meeting, persons }) {
   const { cuochopId } = useRouter().query;
+
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -47,35 +49,8 @@ export default function CuochopDetailpage({ meeting }) {
               <h1>Điểm danh</h1>
               <h1 className="col-span-2">Lý do</h1>
             </div>
-            {personFakes.map((person) => (
-              <Formik
-                initialValues={{
-                  attend: person.attend,
-                  reason: person.reason,
-                }}
-                validate={(values) => {
-                  const errors = {};
-                  return errors;
-                }}
-                onSubmit={(values, { setSubmitting }) => {
-                  setSubmitting(false);
-                  router.push(`/cuochop/1`);
-                }}
-                key={person.id}
-              >
-                {() => (
-                  <Form className="grid grid-cols-4 gap-5 hover:bg-gray-50 py-3 rounded duration-50">
-                    <h1>{person.name}</h1>
-                    <Field name="attend" type="checkbox" />
-
-                    <Field
-                      name="reason"
-                      type="text"
-                      className="col-span-2 focus:outline-none border-b bg-transparent"
-                    />
-                  </Form>
-                )}
-              </Formik>
+            {persons.map((person) => (
+              <DiemDanh person={person} key={person.hoKhau} />
             ))}
           </div>
         </div>
@@ -94,32 +69,20 @@ export async function getServerSideProps(context) {
     const { result: meeting } = await fetchAPI(`/api/v1/cuochop/${cuochopId}`, {
       token: session.token,
     });
+    const { result: persons } = await fetchAPI(
+      `/api/v1/cuochop/${cuochopId}/diemdanh`,
+      {
+        token: session.token,
+      }
+    );
+
     return {
-      props: { meeting },
+      props: { meeting, persons },
     };
   } catch (err) {
     console.error(err);
     return {
-      props: { meeting: {} },
+      props: {},
     };
   }
 }
-
-const personFakes = [
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: true,
-  },
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: true,
-  },
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: false,
-    reason: "Bị bắt vì ấu dâm",
-  },
-];
