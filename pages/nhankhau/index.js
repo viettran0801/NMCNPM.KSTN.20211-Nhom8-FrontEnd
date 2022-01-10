@@ -1,12 +1,16 @@
+import { getSession } from "next-auth/react";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
-
-export default function NhankhauPage() {
+import Paginate from "../../components/common/Paginate";
+import Search from "../../components/common/Search";
+import { fetchAPI } from "../../utils";
+export default function NhankhauPage({ nhanKhaus, totalPages }) {
   return (
     <BaseLayout>
-      <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
+      <div className="m-5 rounded-2xl bg-white py-10 px-5 space-y-10">
         <div className="flex justify-between items-center pb-10 border-b">
           <h1 className="text-xl">Danh sách nhân khẩu</h1>
+          <Search />
         </div>
         <div className="">
           <div className="grid grid-cols-7 gap-5 text-gray-500">
@@ -16,59 +20,47 @@ export default function NhankhauPage() {
             <h1>Giới tính</h1>
             <h1 className="col-span-3">Địa chỉ</h1>
           </div>
-          {nhankhauFakes.map((item) => (
+          {nhanKhaus.map((item) => (
             <Link
               href={`/nhankhau/${item.id}`}
               className="grid grid-cols-7 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
               <h1>{item.id}</h1>
-              <h1>{item.name}</h1>
-              <h1>{item.identityNumber}</h1>
-              <h1>{item.gender}</h1>
-              <h1 className="col-span-3">{item.address}</h1>
+              <h1>{item.hoVaTen}</h1>
+              <h1>{item.cccd}</h1>
+              <h1>{item.gioiTinh}</h1>
+              <h1 className="col-span-3">{item.noiThuongTru}</h1>
             </Link>
           ))}
+        </div>
+        <div className="flex justify-end">
+          <Paginate pageCount={totalPages} />
         </div>
       </div>
     </BaseLayout>
   );
 }
+NhankhauPage.auth = true;
 
-const nhankhauFakes = [
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-  },
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-  },
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-  },
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-  },
-  {
-    id: "0001",
-    name: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    gender: "Gay",
-    identityNumber: 123456789,
-  },
-];
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { page = 1, search = "" } = context.query;
+  try {
+    const {
+      result: { content: nhanKhaus },
+      result: { totalPages },
+    } = await fetchAPI("/api/v1/nhankhau", {
+      token: session.token,
+      params: { page: page - 1, size: 5, sort: "id,asc", keyword: search },
+    });
+
+    return {
+      props: { nhanKhaus, totalPages },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
+}

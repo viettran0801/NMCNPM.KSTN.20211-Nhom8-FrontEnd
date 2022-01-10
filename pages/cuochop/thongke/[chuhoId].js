@@ -11,10 +11,17 @@ import {
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
 import { Tab, Menu } from "@headlessui/react";
-import BaseLayout from "../../../components/layouts/BaseLayout";
+import { getSession } from "next-auth/react";
+import Moment from "moment";
+import { extendMoment } from "moment-range";
+import { split } from "moment-range-split";
+import { useRouter } from "next/router";
+import { fetchAPI } from "../../../utils";
 import Link from "../../../components/common/Link";
+import BaseLayout from "../../../components/layouts/BaseLayout";
 import { ChevronDownIcon } from "../../../components/icons";
 import Transition from "../../../components/common/Transition";
+const moment = extendMoment(Moment);
 
 ChartJS.register(
   CategoryScale,
@@ -26,7 +33,93 @@ ChartJS.register(
   ArcElement
 );
 
-export default function ThongKePage() {
+const options = {
+  scales: {
+    y: {
+      ticks: {
+        beginAtZero: true,
+        callback: function (value) {
+          if (value % 1 === 0) {
+            return value;
+          }
+        },
+      },
+      suggestedMax: 5,
+    },
+  },
+};
+export default function ThongKePage({ participantDetail, listMeetings }) {
+  const { year = 1, chuhoId } = useRouter().query;
+  const current = new Date();
+  const before = new Date();
+  before.setMonth(current.getMonth() - 12 * year);
+  const range = moment.range(before, current);
+  const ranges = split(range, "months");
+  const dataMeeting = {
+    labels: ranges.map((r) =>
+      r.start.format("MM") == 12
+        ? r.start.format("M-YYYY")
+        : r.start.format("M")
+    ),
+    datasets: [
+      {
+        label: "Số cuộc họp tham gia",
+        data: ranges.map((r) =>
+          participantDetail.cuocHopThamGia.reduce(
+            (pre, cuochop) =>
+              pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+            0
+          )
+        ),
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+      {
+        label: "Số cuộc họp vắng có lý do",
+        data: ranges.map((r) =>
+          participantDetail.cuocHopVangCoLyDo.reduce(
+            (pre, cuochop) =>
+              pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+            0
+          )
+        ),
+        backgroundColor: "rgba(255, 206, 86, 0.2)",
+      },
+      {
+        label: "Số cuộc họp vắng không có lý do",
+        data: ranges.map((r) =>
+          participantDetail.cuocHopVangKhongLyDo.reduce(
+            (pre, cuochop) =>
+              pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+            0
+          )
+        ),
+        backgroundColor: "rgba(54, 162, 235, 0.2)",
+      },
+    ],
+  };
+
+  const dataMeetingCount = {
+    labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
+    datasets: [
+      {
+        data: [
+          participantDetail.thamGia,
+          participantDetail.vangKhongLyDo,
+          participantDetail.vangCoLyDo,
+        ],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 159, 64, 1)",
+        ],
+      },
+    ],
+  };
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -35,7 +128,7 @@ export default function ThongKePage() {
             <h1 className="text-xl">Thống kê cuộc họp theo chủ hộ</h1>
             <Menu as="div" className="relative">
               <Menu.Button className="flex items-center space-x-3 px-3 py-2 border border-gray-300 rounded-lg hover:opacity-80 duration-100 focus:outline-none">
-                <span>1 năm gần nhất</span>
+                <span>{`${year} năm gần nhất`}</span>
                 <ChevronDownIcon className="w-5 h-5" />
               </Menu.Button>
               <Transition>
@@ -43,9 +136,12 @@ export default function ThongKePage() {
                   {staticFilters.map((staticFilter) => (
                     <Menu.Item key={staticFilter.name}>
                       {({ active }) => (
-                        <button className="text-left w-full block px-3 py-2 hover:bg-blue-300 hover:text-white duration-100">
+                        <Link
+                          href={`/cuochop/thongke/${chuhoId}?year=${staticFilter.value}`}
+                          className="text-left w-full block px-3 py-2 hover:bg-gray-100 duration-100"
+                        >
                           {staticFilter.name}
-                        </button>
+                        </Link>
                       )}
                     </Menu.Item>
                   ))}
@@ -63,19 +159,19 @@ export default function ThongKePage() {
         <div className="grid grid-cols-2 gap-x-20 pb-10 border-b">
           <div className="space-y-3">
             <h1 className="text-gray-500">Họ và tên chủ hộ</h1>
-            <h1>Hà Thị Tú</h1>
+            <h1>{participantDetail.hoTenChuHo}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Địa chỉ</h1>
-            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+            <h1>{participantDetail.diaChi}</h1>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-10">
           <div className="col-span-2 flex items-center">
-            <Bar data={data} />
+            <Bar data={dataMeeting} options={options} />
           </div>
           <div className="flex items-center">
-            <Pie data={data2} />
+            <Pie data={dataMeetingCount} />
           </div>
         </div>
       </div>
@@ -98,8 +194,8 @@ export default function ThongKePage() {
             ))}
           </Tab.List>
           <Tab.Panels>
-            {cuochopFakes.map((meetings) => (
-              <Tab.Panel key={meetings.length}>
+            {listMeetings.map((meetings, idx) => (
+              <Tab.Panel key={idx}>
                 <div className="grid grid-cols-6 gap-5 text-gray-500">
                   <h1>Người tạo</h1>
                   <h1 className="col-span-2">Tiêu đề</h1>
@@ -112,10 +208,10 @@ export default function ThongKePage() {
                     className="grid grid-cols-6 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
                     key={item.id}
                   >
-                    <h1>{item.creator}</h1>
-                    <h1 className="col-span-2">{item.title}</h1>
-                    <h1>{item.time}</h1>
-                    <h1 className="col-span-2">{item.address}</h1>
+                    <h1>{item.nguoiTao}</h1>
+                    <h1 className="col-span-2">{item.tieuDe}</h1>
+                    <h1>{moment(item.thoiGian).format("hh:mm DD-MM-YYYY")}</h1>
+                    <h1 className="col-span-2">{item.diaDiem}</h1>
                   </Link>
                 ))}
               </Tab.Panel>
@@ -127,144 +223,44 @@ export default function ThongKePage() {
   );
 }
 
-const data = {
-  labels: [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-  ],
-  datasets: [
-    {
-      label: "Số cuộc họp tham gia",
-      data: [
-        733, 255, 366, 556, 223, 140, 222, 733, 255, 366, 556, 223, 140, 222,
-      ],
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Số cuộc họp vắng có lý do",
-      data: [
-        140, 222, 733, 255, 366, 556, 223, 140, 222, 733, 255, 366, 556, 223,
-      ],
-      backgroundColor: "rgba(255, 206, 86, 0.2)",
-    },
-    {
-      label: "Số cuộc họp vắng không có lý do",
-      data: [
-        366, 556, 223, 140, 222, 733, 255, 366, 556, 223, 140, 222, 733, 255,
-      ],
-      backgroundColor: "rgba(54, 162, 235, 0.2)",
-    },
-  ],
-};
+ThongKePage.auth = true;
 
-const data2 = {
-  labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
-  datasets: [
-    {
-      data: [12, 19, 3],
-      backgroundColor: [
-        "rgba(255, 99, 132, 0.2)",
-        "rgba(54, 162, 235, 0.2)",
-        "rgba(255, 206, 86, 0.2)",
-      ],
-      borderColor: [
-        "rgba(255, 99, 132, 1)",
-        "rgba(54, 162, 235, 1)",
-        "rgba(255, 159, 64, 1)",
-      ],
-    },
-  ],
-};
+export async function getServerSideProps(context) {
+  const session = getSession(context);
+  const { chuhoId, year = 1 } = context.query;
+
+  try {
+    const { result: participantDetail } = await fetchAPI(
+      `/api/v1/cuochop/thongkenguoithamgia/${chuhoId}`,
+      {
+        token: session.token,
+        params: {
+          years: year,
+        },
+      }
+    );
+
+    const listMeetings = [
+      participantDetail.cuocHopThamGia,
+      participantDetail.cuocHopVangCoLyDo,
+      participantDetail.cuocHopVangKhongLyDo,
+    ];
+
+    return {
+      props: { participantDetail, listMeetings },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
+}
 
 const tabs = ["Tham gia", "Vắng có lý do", "Vắng không có lý do"];
 
 const staticFilters = [
-  { name: "1 tháng gần nhất" },
-  { name: "3 tháng gần nhất" },
-  { name: "1 năm gần nhất" },
-  { name: "3 năm gần nhất" },
-];
-
-const cuochopFakes = [
-  [
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-  ],
-  [
-    {
-      id: 1,
-      creator: "Hà Thị Trung",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Trung",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Trung",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-  ],
-  [
-    {
-      id: 1,
-      creator: "Hà Thị Gay",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-  ],
+  { name: "1 năm gần nhất", value: 1 },
+  { name: "2 năm gần nhất", value: 2 },
+  { name: "3 năm gần nhất", value: 3 },
+  { name: "5 năm gần nhất", value: 5 },
 ];

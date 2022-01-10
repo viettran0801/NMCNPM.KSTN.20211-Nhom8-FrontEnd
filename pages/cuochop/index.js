@@ -1,12 +1,15 @@
+import { getSession } from "next-auth/react";
+import moment from "moment";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
-
-export default function CuochopPage() {
+import Paginate from "../../components/common/Paginate";
+import { fetchAPI } from "../../utils";
+export default function CuochopPage({ dataMeetings, totalPages }) {
   return (
     <BaseLayout>
-      <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
-        <div className="flex justify-between items-center pb-10 border-b">
+      <div className="m-5 rounded-2xl bg-white p-5 space-y-10">
+        <div className="flex justify-between items-center pb-5 border-b">
           <h1 className="text-xl">Danh sách cuộc họp</h1>
           <div className="flex space-x-3">
             <Link
@@ -35,76 +38,53 @@ export default function CuochopPage() {
             <h1>Tham gia</h1>
             <h1>Vắng mặt</h1>
           </div>
-          {cuochopFakes.map((item) => (
+          {dataMeetings.map((item) => (
             <Link
               href={`/cuochop/${item.id}`}
               className="grid grid-cols-9 gap-5 hover:bg-gray-50 py-5 rounded duration-50"
               key={item.id}
             >
-              <h1>{item.status}</h1>
-              <h1>{item.creator}</h1>
-              <h1 className="col-span-2">{item.title}</h1>
-              <h1>{item.time}</h1>
-              <h1 className="col-span-2">{item.address}</h1>
-              <h1>{item.attend}</h1>
-              <h1>{item.absent}</h1>
+              <h1>
+                {new Date(item.thoiGian) < Date.now()
+                  ? "Đã diễn ra"
+                  : "Chưa diễn ra"}
+              </h1>
+              <h1>{item.nguoiTao}</h1>
+              <h1 className="col-span-2">{item.tieuDe}</h1>
+              <h1>{moment(item.thoiGian).format("hh:mm  DD-MM-YYYY")}</h1>
+              <h1 className="col-span-2">{item.diaDiem}</h1>
+              <h1>{item.thamGia}</h1>
+              <h1>{item.vangMat}</h1>
             </Link>
           ))}
+        </div>
+        <div className="flex justify-end">
+          <Paginate pageCount={totalPages} />
         </div>
       </div>
     </BaseLayout>
   );
 }
+CuochopPage.auth = true;
 
-const cuochopFakes = [
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-  {
-    id: 1,
-    status: "0001",
-    creator: "Hà Thị Tuấn",
-    address: "123 đường A, phố B, huyện C, tỉnh D",
-    title: "Họp thông đít",
-    time: "13:00 13/3/1333",
-    attend: "70",
-    absent: "20",
-  },
-];
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { page = 1 } = context.query;
+  try {
+    const {
+      result: { content: dataMeetings },
+      result: { totalPages },
+    } = await fetchAPI("/api/v1/cuochop", {
+      token: session.token,
+      params: { page: page - 1, size: 5, sort: "id,asc" },
+    });
+
+    return {
+      props: { dataMeetings, totalPages }, // will be passed to the page component as props
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
+}

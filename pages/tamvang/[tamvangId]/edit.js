@@ -1,13 +1,18 @@
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import moment from "moment";
+import { getSession, useSession } from "next-auth/react";
+import { useState } from "react";
+import { fetchAPI } from "../../../utils";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
 import { TrashIcon } from "../../../components/icons";
-
-export default function EditTamvangPage() {
+export default function EditTamvangPage({ tamvang }) {
   const router = useRouter();
   const { tamvangId } = router.query;
+  const { data: session } = useSession();
+  const [errorMessage, setErrorMessage] = useState("");
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -22,35 +27,47 @@ export default function EditTamvangPage() {
         </div>
         <Formik
           initialValues={{
-            location: "123 đường A, phố B, huyện C, tỉnh D",
-            name: "Hà Thị Tú",
-            identityNumber: "123456789",
-            fromDate: "10-10-1111",
-            toDate: "10-10-1111",
-            reason:
-              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+            diaChi: tamvang.diaChi,
+            hoVaTen: tamvang.hoVaTen,
+            cccd: tamvang.cccd,
+            tuNgay: moment(tamvang.tuNgay).format("YYYY-MM-DD"),
+            denNgay: moment(tamvang.denNgay).format("YYYY-MM-DD"),
+            lyDo: tamvang.lyDo,
           }}
           validate={(values) => {
             const errors = {};
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            setSubmitting(false);
-            router.push(`/tamvang/1`);
+          onSubmit={async (values) => {
+            try {
+              await fetchAPI(`/api/v1/tamvang/${tamvangId}`, {
+                method: "PUT",
+                body: {
+                  ...values,
+                  tuNgay: moment(values.tuNgay + "Z").toISOString(),
+                  denNgay: moment(values.denNgay + "Z").toISOString(),
+                },
+                token: session.token,
+              });
+              router.push(`/tamvang/${tamvangId}`);
+            } catch (err) {
+              setErrorMessage(err.message);
+            }
           }}
         >
           {({ isSubmitting }) => (
             <Form className="grid grid-cols-2 gap-x-20 gap-y-10">
-              <Input label="Họ và tên" name="name" />
-              <Input label="Số CMND/CCCD" name="identityNumber" />
+              <Input label="Họ và tên" name="hoVaTen" />
+              <Input label="Số CMND/CCCD" name="cccd" />
               <div className=" col-span-2">
-                <Input label="Địa chỉ" name="location" />
+                <Input label="Địa chỉ" name="diaChi" />
               </div>
-              <Input label="Từ ngày" name="fromDate" />
-              <Input label="Đến ngày" name="toDate" />
+              <Input label="Từ ngày" name="tuNgay" type="date" />
+              <Input label="Đến ngày" name="denNgay" type="date" />
               <div className="col-span-2">
-                <Input label="Lý do" name="reason" type="textarea" />
+                <Input label="Lý do" name="lyDo" type="textarea" />
               </div>
+              <p className="text-red-700 col-span-2">{errorMessage}</p>
               <div>
                 <button
                   type="submit"
@@ -70,4 +87,25 @@ export default function EditTamvangPage() {
       </div>
     </BaseLayout>
   );
+}
+
+EditTamvangPage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { tamvangId } = await context.query;
+  try {
+    const { result: tamvang } = await fetchAPI(`/api/v1/tamtru/${tamvangId}`, {
+      token: session.token,
+    });
+    return {
+      props: {
+        tamvang,
+      },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
 }

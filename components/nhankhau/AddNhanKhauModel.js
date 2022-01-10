@@ -1,11 +1,17 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Formik, Form } from "formik";
 import { Fragment, useState } from "react";
+import moment from "moment";
+import { useSession } from "next-auth/react";
+import { Field } from "formik";
 import Input from "../common/Input";
 import { PlusIcon } from "../icons";
+import { fetchAPI } from "../../utils";
 
-export default function AddNhanKhauModel() {
+export default function AddNhanKhauModel({ addNhanKhau }) {
   let [isOpen, setIsOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { data: session } = useSession();
 
   function closeModal() {
     setIsOpen(false);
@@ -73,83 +79,118 @@ export default function AddNhanKhauModel() {
                 </div>
                 <Formik
                   initialValues={{
-                    name: "",
-                    otherName: "",
-                    bod: "",
-                    gender: "",
-                    identityNumber: "",
-                    passportNumber: "",
-                    homeTown: "",
-                    nationality: "",
-                    religion: "",
-                    ethnic: "",
-                    permanentAddress: "",
-                    address: "",
-                    relation: "",
-                    job: "",
-                    academicLevel: "",
-                    workplace: "",
+                    hoVaTen: "",
+                    hoVaTenKhac: "",
+                    ngaySinh: "",
+                    gioiTinh: "",
+                    cccd: "",
+                    soHoChieu: "",
+                    nguyenQuan: "",
+                    quocTich: "",
+                    tonGiao: "",
+                    danToc: "",
+                    noiThuongTru: "",
+                    diaChiHienTai: "",
+                    quanHeVoiChuHo: "",
+                    ngheNghiep: "",
+                    trinhDoHocVan: "",
+                    noiLamViec: "",
                   }}
                   validate={(values) => {
                     const errors = {};
                     return errors;
                   }}
-                  onSubmit={(values, { setSubmitting }) => {
-                    setSubmitting(false);
-                    closeModal();
+                  onSubmit={async (values) => {
+                    try {
+                      const { result } = await fetchAPI(`/api/v1/nhankhau`, {
+                        method: "POST",
+                        token: session.token,
+                        body: {
+                          ...values,
+                          ngaySinh: moment(values.ngaySinh + "Z").toISOString(),
+                        },
+                      });
+                      addNhanKhau(result);
+                      closeModal();
+                    } catch (err) {
+                      setErrorMessage(err.message);
+                    }
                   }}
                 >
                   {({ isSubmitting }) => (
                     <Form className="space-y-5">
                       <div className="grid grid-cols-2 gap-10">
-                        <Input label="Họ và tên" name="name" />
-                        <Input label="Tên gọi khác (nếu có)" name="otherName" />
-                      </div>
-                      <div className="flex items-center">
-                        <Input label="Ngày sinh" name="bod" />
+                        <Input label="Họ và tên" name="hoVaTen" />
+                        <Input
+                          label="Tên gọi khác (nếu có)"
+                          name="hoVaTenKhac"
+                        />
                       </div>
                       <div className="grid grid-cols-2 gap-10">
-                        <Input label="Số CMND/CCCD" name="identityNumber" />
-                        <Input label="Số hộ chiếu" name="passportNumber" />
+                        <div className="w-fit">
+                          <Input
+                            label="Ngày sinh"
+                            name="ngaySinh"
+                            type="date"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <h1 className="text-gray-500">Giới tinh</h1>
+                          <div className="space-x-10">
+                            <label className="space-x-3">
+                              <Field type="radio" name="gioiTinh" value="Nam" />
+                              <span>Nam</span>
+                            </label>
+                            <label className="space-x-3">
+                              <Field type="radio" name="gioiTinh" value="Nữ" />
+                              <span>Nữ</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-10">
+                        <Input label="Số CMND/CCCD" name="cccd" />
+                        <Input label="Số hộ chiếu" name="soHoChieu" />
                       </div>
                       <div className="flex items-center">
-                        <Input label="Quan hệ với chủ hộ" name="relation" />
+                        <Input
+                          label="Quan hệ với chủ hộ"
+                          name="quanHeVoiChuHo"
+                        />
                       </div>
                       <div className="grid grid-cols-9 gap-10">
                         <div className="col-span-3">
-                          <Input label="Nguyên quán" name="homeTown" />
+                          <Input label="Nguyên quán" name="nguyenQuan" />
                         </div>
                         <div className="col-span-2">
-                          <Input label="Dân tộc" name="ethnic" />
+                          <Input label="Dân tộc" name="danToc" />
                         </div>
                         <div className="col-span-2">
-                          <Input label="Tôn giáo" name="religion" />
+                          <Input label="Tôn giáo" name="tonGiao" />
                         </div>
                         <div className="col-span-2">
-                          <Input label="Quốc tịch" name="nationality" />
+                          <Input label="Quốc tịch" name="quocTich" />
                         </div>
                       </div>
-                      <Input
-                        label="Địa chỉ thường trú"
-                        name="permanentAddress"
-                      />
-                      <Input label="Địa chỉ hiện tại" name="address" />
+                      <Input label="Địa chỉ thường trú" name="noiThuongTru" />
+                      <Input label="Địa chỉ hiện tại" name="diaChiHienTai" />
                       <div className="grid grid-cols-9 gap-10">
                         <div className="col-span-2">
                           <Input
                             label="Trình độ học vấn"
-                            name="academicLevel"
+                            name="trinhDoHocVan"
                           />
                         </div>
 
                         <div className="col-span-3">
-                          <Input label="Nghề nghiệp" name="job" />
+                          <Input label="Nghề nghiệp" name="ngheNghiep" />
                         </div>
 
                         <div className="col-span-4">
-                          <Input label="Nơi làm việc" name="workplace" />
+                          <Input label="Nơi làm việc" name="noiLamViec" />
                         </div>
                       </div>
+                      <p className="text-red-700">{errorMessage}</p>
                       <div>
                         <button
                           type="submit"

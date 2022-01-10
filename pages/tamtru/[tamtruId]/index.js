@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-
-export default function TamtruDetailpage() {
+import { fetchAPI } from "../../../utils";
+export default function TamtruDetailpage({ tamtru }) {
   const { tamtruId } = useRouter().query;
   return (
     <BaseLayout>
@@ -30,35 +31,52 @@ export default function TamtruDetailpage() {
         <div className="grid grid-cols-2 gap-x-20 gap-y-10">
           <div className="space-y-3">
             <h1 className="text-gray-500">Họ và tên</h1>
-            <h1>Hà Thị Tú</h1>
+            <h1>{tamtru.hoVaTen}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Số CMND/CCCD</h1>
-            <h1>123456789</h1>
+            <h1>{tamtru.cccd}</h1>
           </div>
 
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Địa chỉ</h1>
-            <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+            <h1>{tamtru.diaChi}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Từ ngày</h1>
-            <h1>10-10-1111</h1>
+            <h1>{tamtru.tuNgay}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Đến ngày</h1>
-            <h1>10-10-1111</h1>
+            <h1>{tamtru.denNgay}</h1>
           </div>
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Lý do</h1>
-            <h1>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industrys standard dummy text
-              ever since the 1500s,
-            </h1>
+            <h1>{tamtru.lyDo}</h1>
           </div>
         </div>
       </div>
     </BaseLayout>
   );
+}
+
+TamtruDetailpage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { tamtruId } = await context.query;
+  try {
+    const { result: tamtru } = await fetchAPI(`/api/v1/tamtru/${tamtruId}`, {
+      token: session.token,
+    });
+    return {
+      props: {
+        tamtru,
+      },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
 }

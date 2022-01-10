@@ -1,9 +1,11 @@
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
+import moment from "moment";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-
-export default function CuochopDetailpage() {
+import { fetchAPI } from "../../../utils";
+export default function CuochopDetailpage({ meetingDetail, diemDanh }) {
   const { cuochopId } = useRouter().query;
   return (
     <BaseLayout>
@@ -36,33 +38,27 @@ export default function CuochopDetailpage() {
         <div className="space-y-10 pb-10 border-b">
           <div className="space-y-3">
             <h1 className="text-gray-500">Tiêu đề</h1>
-            <h1>Họp phòng chống ấu dâm</h1>
+            <h1>{meetingDetail.tieuDe}</h1>
           </div>
           <div className="grid grid-cols-3 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Thời gian</h1>
-              <h1>13:10 12/12/1222</h1>
+              <h1>
+                {moment(meetingDetail.thoiGian).format("hh:mm DD-MM-YYYY")}
+              </h1>
             </div>
             <div className="space-y-3 col-span-2">
               <h1 className="text-gray-500">Địa điểm</h1>
-              <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+              <h1>{meetingDetail.diaDiem}</h1>
             </div>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Nội dung cuộc họp</h1>
-            <h1>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industrys standard dummy text
-              ever since the 1500s,
-            </h1>
+            <h1>{meetingDetail.noiDung}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Bản báo cáo cuộc họp</h1>
-            <h1>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industrys standard dummy text
-              ever since the 1500s,
-            </h1>
+            <h1>{meetingDetail.banBaoCao}</h1>
           </div>
         </div>
         <div className="space-y-3">
@@ -73,15 +69,15 @@ export default function CuochopDetailpage() {
               <h1>Tham gia</h1>
               <h1 className="col-span-2">Lý do</h1>
             </div>
-            {personFakes.map((person) => (
+            {diemDanh.map((person) => (
               <Link
-                href={`/cuochop/thongke/${person.id}`}
+                href={`/cuochop/thongke/${person.hoKhau}`}
                 className="grid grid-cols-4 gap-5 hover:bg-gray-50 py-3 rounded duration-50"
-                key={person.id}
+                key={person.hoKhau}
               >
-                <h1>{person.name}</h1>
-                <input type="checkbox" checked={person.attend} />
-                <h1 className="col-span-2">{person.reason}</h1>
+                <h1>{person.hoTenChuHo}</h1>
+                <input type="checkbox" checked={person.diemDanh} readOnly />
+                <h1 className="col-span-2">{person.lyDo}</h1>
               </Link>
             ))}
           </div>
@@ -91,21 +87,32 @@ export default function CuochopDetailpage() {
   );
 }
 
-const personFakes = [
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: true,
-  },
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: true,
-  },
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: false,
-    reason: "Bị bắt vì ấu dâm",
-  },
-];
+export async function getServerSideProps(context) {
+  const { cuochopId } = context.query;
+  const session = await getSession(context);
+
+  try {
+    const { result: meetingDetail } = await fetchAPI(
+      `/api/v1/cuochop/${cuochopId}`,
+      {
+        token: session.token,
+      }
+    );
+    const { result: diemDanh } = await fetchAPI(
+      `/api/v1/cuochop/${cuochopId}/diemdanh`,
+      {
+        token: session.token,
+      }
+    );
+
+    return {
+      props: { meetingDetail, diemDanh },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
+}
+
+CuochopDetailpage.auth = true;

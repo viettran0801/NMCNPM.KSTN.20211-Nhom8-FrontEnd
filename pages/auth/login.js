@@ -1,7 +1,11 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import BaseLayout from "../../components/layouts/BaseLayout";
-
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
 export default function LoginPage() {
+  const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState("");
   return (
     <BaseLayout isDashboard={false}>
       <div className="mt-[100px] w-[500px] mx-auto space-y-10">
@@ -12,8 +16,17 @@ export default function LoginPage() {
             const errors = {};
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            setSubmitting(false);
+          onSubmit={async (values, action) => {
+            const res = await signIn("credentials", {
+              username: values.username,
+              password: values.password,
+              redirect: false,
+            });
+            if (!res.error) {
+              router.push("/");
+            } else {
+              setErrorMessage("Incorrect username and password");
+            }
           }}
         >
           {({ isSubmitting }) => (
@@ -38,8 +51,13 @@ export default function LoginPage() {
                   name="password"
                   className="w-full p-3 focus:outline-none rounded-lg focus:shadow-sm border"
                 />
-                <ErrorMessage name="password" component="div" />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500"
+                />
               </div>
+              <p className="text-red-500">{errorMessage}</p>
               <button
                 type="submit"
                 disabled={isSubmitting}

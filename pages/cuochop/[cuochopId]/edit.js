@@ -1,12 +1,49 @@
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import moment from "moment";
+import { useState } from "react";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
+import { getSession, useSession } from "next-auth/react";
+import { fetchAPI } from "../../../utils";
 
-export default function EditCuochopPage() {
+export default function EditCuochopPage({ meeting, inviters }) {
   const router = useRouter();
   const { cuochopId } = router.query;
+  const chuHoFakes = inviters;
+  const { data: session } = useSession();
+  const [mois, setMois] = useState([]);
+
+  const inviteAll = () => {
+    setMois([]);
+
+    const values = chuHoFakes.map((chuho) => chuho.id);
+    setMois(values);
+
+    for (let index in chuHoFakes) {
+      chuHoFakes[index].invited = true;
+    }
+  };
+
+  const discardAllInvites = () => {
+    setMois([]);
+    for (let index in chuHoFakes) {
+      chuHoFakes[index].invited = false;
+    }
+  };
+
+  const onChangeInvite = (chuHoId) => {
+    var chuHoIndex = chuHoFakes.findIndex((chuHo) => chuHo.id == chuHoId);
+    if (chuHoFakes[chuHoIndex].invited == true) {
+      setMois(mois.filter((id) => id != chuHoId));
+      chuHoFakes[chuHoIndex].invited = false;
+    } else {
+      setMois(mois.filter((id) => id != chuHoId));
+      setMois([...mois, chuHoId]);
+      chuHoFakes[chuHoIndex].invited = true;
+    }
+  };
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -21,43 +58,76 @@ export default function EditCuochopPage() {
         </div>
         <Formik
           initialValues={{
-            location: "123 đường A, phố B, huyện C, tỉnh D",
-            title: "Họp phòng chống ấu dâm",
-            time: "13:10 12/12/1222",
-            content:
-              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s,",
+            diaDiem: meeting.diaDiem,
+            tieuDe: meeting.tieuDe,
+            thoiGian: moment(meeting.thoiGian).format("YYYY-MM-DDThh:mm"),
+            noiDung: meeting.noiDung,
           }}
           validate={(values) => {
             const errors = {};
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            setSubmitting(false);
-            router.push(`/cuochop/1`);
+          onSubmit={async (values, { setSubmitting }) => {
+            const chuHoDaMoi = chuHoFakes
+              .filter((chuho) => chuho.invited == true)
+              .map((chuho) => chuho.id);
+
+            try {
+              const { result } = await fetchAPI(
+                `/api/v1/cuochop/${cuochopId}`,
+                {
+                  method: "PUT",
+                  body: {
+                    ...values,
+                    thoiGian: moment(values.thoiGian + "Z").toISOString(),
+                    nguoiTao: session.user.name,
+                  },
+                  token: session.token,
+                }
+              );
+
+              await fetchAPI(`/api/v1/cuochop/danhsachthamgia/${cuochopId}`, {
+                method: "POST",
+                body: {
+                  hoKhaus: chuHoDaMoi,
+                },
+                token: session.token,
+              });
+              setSubmitting(false);
+              router.push(`/cuochop/${result.id}`);
+            } catch (err) {
+              setErrorMessage(err.message);
+            }
           }}
         >
           {({ isSubmitting }) => (
             <Form className="space-y-10">
-              <Input label="Tiêu đề" name="title" />
+              <Input label="Tiêu đề" name="tieuDe" />
               <div className="grid grid-cols-3 gap-10">
-                <Input label="Thời gian" name="time" />
+                <Input
+                  label="Thời gian"
+                  name="thoiGian"
+                  type="datetime-local"
+                />
                 <div className="col-span-2">
-                  <Input label="Địa điểm" name="location" />
+                  <Input label="Địa điểm" name="diaDiem" />
                 </div>
               </div>
-              <Input label="Nội dung" name="content" type="textarea" />
+              <Input label="Nội dung" name="noiDung" type="textarea" />
               <div className="space-y-10">
                 <div className="flex space-x-3 items-center pb-10 border-b">
                   <h1 className="text-lg">Danh sách tham gia</h1>
                   <button
                     type="button"
                     className="text-green-700 font-medium bg-green-300 rounded-lg px-3 py-2 hover:opacity-80 duration-100"
+                    onClick={inviteAll}
                   >
                     Chọn tất cả
                   </button>
                   <button
                     type="button"
                     className="text-red-700 font-medium bg-red-300 rounded-lg px-3 py-2 hover:opacity-80 duration-100"
+                    onClick={discardAllInvites}
                   >
                     Bỏ chọn tất cả
                   </button>
@@ -67,16 +137,17 @@ export default function EditCuochopPage() {
                     <h1>Họ và tên</h1>
                     <h1>Mời</h1>
                   </div>
-                  {chuhoFakes.map((person) => (
+                  {chuHoFakes.map((person) => (
                     <div
                       className="grid grid-cols-2 gap-10 py-3 hover:bg-gray-50 duration-100"
-                      key={person.id}
+                      key={person.hoKhau}
                     >
-                      <h1>{person.name}</h1>
+                      <h1>{person.hoTenChuHo}</h1>
                       <input
                         type="checkbox"
                         className="ml-2"
                         checked={person.invited}
+                        onChange={(e) => onChangeInvite(person.id)}
                       />
                     </div>
                   ))}
@@ -99,9 +170,29 @@ export default function EditCuochopPage() {
   );
 }
 
-const chuhoFakes = [
-  { id: 1, name: "Ha thi Tu", invited: true },
-  { id: 1, name: "Ha thi Tu", invited: true },
-  { id: 1, name: "Ha thi Tu", invited: false },
-  { id: 1, name: "Ha thi Tu", invited: true },
-];
+EditCuochopPage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { cuochopId } = context.query;
+  try {
+    const { result: meeting } = await fetchAPI(`/api/v1/cuochop/${cuochopId}`, {
+      token: session.token,
+    });
+
+    const { result: inviters } = await fetchAPI(
+      `/api/v1/cuochop/danhsachthamgia/${cuochopId}`,
+      {
+        token: session.token,
+      }
+    );
+
+    return {
+      props: { meeting, inviters },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
+}

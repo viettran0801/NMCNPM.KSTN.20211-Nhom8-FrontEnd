@@ -11,14 +11,14 @@ import { ChevronUpIcon } from "../icons";
 
 export default function Dashboard() {
   return (
-    <div className="w-[300px] px-7 py-10 space-y-10 shadow shadow-gray-100">
+    <div className="w-[250px] px-3 py-10 space-y-10 shadow shadow-gray-100">
       <h1 className="text-2xl text-blue-700">Quản lý dân cư</h1>
       <div>
-        <div className="flex space-x-3 items-center p-3">
+        <div className="flex space-x-3 items-center py-3">
           <HomeIcon />
           <Link href="/">Trang chủ</Link>
         </div>
-        <div className="flex space-x-3 items-center p-3">
+        <div className="flex space-x-3 items-center py-3">
           <UserGroupIcon />
           <Link href="/hokhau">Quản lý hộ khẩu</Link>
         </div>
@@ -26,7 +26,7 @@ export default function Dashboard() {
           {({ open }) => (
             <div>
               <Disclosure.Button
-                className={`flex justify-between w-full p-3 rounded-lg duration-300 ${
+                className={`flex justify-between w-full py-3 rounded-lg duration-300 ${
                   open ? "bg-gray-100" : ""
                 }`}
               >
@@ -74,13 +74,9 @@ export default function Dashboard() {
             </div>
           )}
         </Disclosure>
-        <div className="flex space-x-3 items-center p-3">
+        <div className="flex space-x-3 items-center py-3">
           <CalendarIcon />
           <Link href="/cuochop">Quản lý cuộc họp</Link>
-        </div>
-        <div className="flex space-x-3 items-center p-3">
-          <SettingIcon />
-          <Link href="/">Tài khoản</Link>
         </div>
       </div>
     </div>

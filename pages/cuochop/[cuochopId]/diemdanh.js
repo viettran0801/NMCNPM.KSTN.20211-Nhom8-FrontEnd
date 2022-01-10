@@ -1,11 +1,13 @@
 import { useRouter } from "next/router";
-import { PencilIcon } from "../../../components/icons";
+import moment from "moment";
+import { getSession } from "next-auth/react";
+import { fetchAPI } from "../../../utils";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { Field, Form, Formik } from "formik";
-
-export default function CuochopDetailpage() {
+import DiemDanh from "../../../components/diemdanh/DiemDanh";
+export default function CuochopDetailpage({ meeting, persons }) {
   const { cuochopId } = useRouter().query;
+
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -24,16 +26,16 @@ export default function CuochopDetailpage() {
         <div className="space-y-10 pb-10 border-b">
           <div className="space-y-3">
             <h1 className="text-gray-500">Tiêu đề</h1>
-            <h1>Họp phòng chống ấu dâm</h1>
+            <h1>{meeting.tieuDe}</h1>
           </div>
           <div className="grid grid-cols-3 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Thời gian</h1>
-              <h1>13:10 12/12/1222</h1>
+              <h1>{moment(meeting.thoiGian).format("hh:mm DD-MM-YYYY")}</h1>
             </div>
             <div className="space-y-3 col-span-2">
               <h1 className="text-gray-500">Địa điểm</h1>
-              <h1>123 đường A, phố B, huyện C, tỉnh D</h1>
+              <h1>{meeting.diaDiem}</h1>
             </div>
           </div>
         </div>
@@ -45,35 +47,8 @@ export default function CuochopDetailpage() {
               <h1>Điểm danh</h1>
               <h1 className="col-span-2">Lý do</h1>
             </div>
-            {personFakes.map((person) => (
-              <Formik
-                initialValues={{
-                  attend: person.attend,
-                  reason: person.reason,
-                }}
-                validate={(values) => {
-                  const errors = {};
-                  return errors;
-                }}
-                onSubmit={(values, { setSubmitting }) => {
-                  setSubmitting(false);
-                  router.push(`/cuochop/1`);
-                }}
-                key={person.id}
-              >
-                {() => (
-                  <Form className="grid grid-cols-4 gap-5 hover:bg-gray-50 py-3 rounded duration-50">
-                    <h1>{person.name}</h1>
-                    <Field name="attend" type="checkbox" />
-
-                    <Field
-                      name="reason"
-                      type="text"
-                      className="col-span-2 focus:outline-none border-b bg-transparent"
-                    />
-                  </Form>
-                )}
-              </Formik>
+            {persons.map((person) => (
+              <DiemDanh person={person} key={person.hoKhau} />
             ))}
           </div>
         </div>
@@ -82,21 +57,29 @@ export default function CuochopDetailpage() {
   );
 }
 
-const personFakes = [
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: true,
-  },
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: true,
-  },
-  {
-    id: 1,
-    name: "Ha Thi tu",
-    attend: false,
-    reason: "Bị bắt vì ấu dâm",
-  },
-];
+CuochopDetailpage.auth = true;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const { cuochopId } = context.query;
+
+  try {
+    const { result: meeting } = await fetchAPI(`/api/v1/cuochop/${cuochopId}`, {
+      token: session.token,
+    });
+    const { result: persons } = await fetchAPI(
+      `/api/v1/cuochop/${cuochopId}/diemdanh`,
+      {
+        token: session.token,
+      }
+    );
+
+    return {
+      props: { meeting, persons },
+    };
+  } catch (err) {
+    return {
+      props: {},
+    };
+  }
+}
