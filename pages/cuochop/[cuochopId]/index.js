@@ -2,9 +2,9 @@ import { useRouter } from "next/router";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { fetchAPI, parseInstantToDateTime } from "../../../utils";
+import { fetchAPI } from "../../../utils";
 import { getSession } from "next-auth/react";
-
+import moment from "moment";
 export default function CuochopDetailpage({ meetingDetail, diemDanh }) {
   const { cuochopId } = useRouter().query;
   return (
@@ -43,7 +43,9 @@ export default function CuochopDetailpage({ meetingDetail, diemDanh }) {
           <div className="grid grid-cols-3 gap-10">
             <div className="space-y-3">
               <h1 className="text-gray-500">Thời gian</h1>
-              <h1>{meetingDetail.thoiGian}</h1>
+              <h1>
+                {moment(meetingDetail.thoiGian).format("hh:mm DD-MM-YYYY")}
+              </h1>
             </div>
             <div className="space-y-3 col-span-2">
               <h1 className="text-gray-500">Địa điểm</h1>
@@ -89,18 +91,19 @@ export async function getServerSideProps(context) {
   const { cuochopId } = context.query;
   const session = await getSession(context);
 
-  const getMeetingDetailUrl = "/api/v1/cuochop/" + cuochopId;
-  const getAttendanceUrl = "/api/v1/cuochop/" + cuochopId + "/diemdanh";
   try {
-    const { result: meetingDetail } = await fetchAPI(getMeetingDetailUrl, {
-      token: session.token,
-    });
-
-    meetingDetail.thoiGian = parseInstantToDateTime(meetingDetail.thoiGian);
-
-    const { result: diemDanh } = await fetchAPI(getAttendanceUrl, {
-      token: session.token,
-    });
+    const { result: meetingDetail } = await fetchAPI(
+      `/api/v1/cuochop/${cuochopId}`,
+      {
+        token: session.token,
+      }
+    );
+    const { result: diemDanh } = await fetchAPI(
+      `/api/v1/cuochop/${cuochopId}/diemdanh`,
+      {
+        token: session.token,
+      }
+    );
 
     return {
       props: { meetingDetail, diemDanh },
