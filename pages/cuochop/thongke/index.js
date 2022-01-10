@@ -53,7 +53,6 @@ const options = {
 
 export default function ThongKePage({ participants, thongke }) {
   const { year = 1 } = useRouter().query;
-
   const current = new Date();
   const before = new Date();
   before.setMonth(current.getMonth() - 12 * year);
