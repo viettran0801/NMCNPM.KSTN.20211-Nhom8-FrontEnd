@@ -1,11 +1,11 @@
+import moment from "moment";
+import { getSession } from "next-auth/react";
+import { fetchAPI } from "../../utils";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
-import { getSession } from "next-auth/react";
-import { fetchAPI } from "../../utils";
-import moment from "moment";
-
 import Paginate from "../../components/common/Paginate";
+
 export default function TamVangPage({ tamVangs, totalPages }) {
   return (
     <BaseLayout>
@@ -68,9 +68,8 @@ export async function getServerSideProps(context) {
       props: { tamVangs, totalPages },
     };
   } catch (err) {
-    console.error(err);
     return {
-      props: { tamVangs: [] },
+      props: {},
     };
   }
 }
