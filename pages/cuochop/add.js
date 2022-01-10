@@ -1,12 +1,12 @@
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import moment from "moment";
+import { useState } from "react";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import Input from "../../components/common/Input";
 import { getSession, useSession } from "next-auth/react";
-import moment from "moment";
 import { fetchAPI } from "../../utils";
-import { useState } from "react";
 
 export default function AddCuochopPage({ inviters }) {
   const router = useRouter();
@@ -174,9 +174,8 @@ export async function getServerSideProps(context) {
       props: { inviters },
     };
   } catch (err) {
-    console.error(err);
     return {
-      props: { intviters: {} },
+      props: {},
     };
   }
 }

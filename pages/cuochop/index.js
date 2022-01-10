@@ -1,10 +1,10 @@
+import { getSession } from "next-auth/react";
+import moment from "moment";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
-import { fetchAPI } from "../../utils";
-import { getSession } from "next-auth/react";
-import moment from "moment";
 import Paginate from "../../components/common/Paginate";
+import { fetchAPI } from "../../utils";
 export default function CuochopPage({ dataMeetings, totalPages }) {
   return (
     <BaseLayout>
@@ -83,9 +83,8 @@ export async function getServerSideProps(context) {
       props: { dataMeetings, totalPages }, // will be passed to the page component as props
     };
   } catch (err) {
-    console.error(err);
     return {
-      props: { dataMeetings: [] },
+      props: {},
     };
   }
 }
