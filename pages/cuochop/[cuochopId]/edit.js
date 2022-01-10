@@ -3,13 +3,49 @@ import { useRouter } from "next/router";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import moment from "moment";
 import { fetchAPI } from "../../../utils";
+import { useState } from "react";
+
 export default function EditCuochopPage({ meeting, inviters }) {
-  console.log(meeting);
   const router = useRouter();
   const { cuochopId } = router.query;
+  var chuHoFakes = inviters;
+  const { data: session } = useSession();
+  const [mois, setMois] = useState([]);
+
+  var isInitialize = false;
+
+  const inviteAll = () => {
+    setMois([]);
+
+    const values = chuHoFakes.map((chuho) => chuho.id);
+    setMois(values);
+
+    for (let index in chuHoFakes) {
+      chuHoFakes[index].invited = true;
+    }
+  };
+
+  const discardAllInvites = () => {
+    setMois([]);
+    for (let index in chuHoFakes) {
+      chuHoFakes[index].invited = false;
+    }
+  };
+
+  const onChangeInvite = (chuHoId) => {
+    var chuHoIndex = chuHoFakes.findIndex((chuHo) => chuHo.id == chuHoId);
+    if (chuHoFakes[chuHoIndex].invited == true) {
+      setMois(mois.filter((id) => id != chuHoId));
+      chuHoFakes[chuHoIndex].invited = false;
+    } else {
+      setMois(mois.filter((id) => id != chuHoId));
+      setMois([...mois, chuHoId]);
+      chuHoFakes[chuHoIndex].invited = true;
+    }
+  };
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -26,23 +62,55 @@ export default function EditCuochopPage({ meeting, inviters }) {
           initialValues={{
             diaDiem: meeting.diaDiem,
             tieuDe: meeting.tieuDe,
-            thoiGian: moment(meeting.thoiGian).format("hh:mm DD-MM-YYYY"),
+            thoiGian: moment(meeting.thoiGian).format("YYYY-MM-DDThh:mm"),
             noiDung: meeting.noiDung,
           }}
           validate={(values) => {
             const errors = {};
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            setSubmitting(false);
-            router.push(`/cuochop/${meeting.id}`);
+          onSubmit={async (values, { setSubmitting }) => {
+            const chuHoDaMoi = chuHoFakes
+              .filter((chuho) => chuho.invited == true)
+              .map((chuho) => chuho.id);
+
+            try {
+              const { result } = await fetchAPI(
+                `/api/v1/cuochop/${cuochopId}`,
+                {
+                  method: "PUT",
+                  body: {
+                    ...values,
+                    thoiGian: moment(values.thoiGian + "Z").toISOString(),
+                    nguoiTao: session.user.name,
+                  },
+                  token: session.token,
+                }
+              );
+
+              await fetchAPI(`/api/v1/cuochop/danhsachthamgia/${cuochopId}`, {
+                method: "POST",
+                body: {
+                  hoKhaus: chuHoDaMoi,
+                },
+                token: session.token,
+              });
+              setSubmitting(false);
+              router.push(`/cuochop/${result.id}`);
+            } catch (err) {
+              setErrorMessage(err.message);
+            }
           }}
         >
           {({ isSubmitting }) => (
             <Form className="space-y-10">
               <Input label="Tiêu đề" name="tieuDe" />
               <div className="grid grid-cols-3 gap-10">
-                <Input label="Thời gian" name="thoiGian" />
+                <Input
+                  label="Thời gian"
+                  name="thoiGian"
+                  type="datetime-local"
+                />
                 <div className="col-span-2">
                   <Input label="Địa điểm" name="diaDiem" />
                 </div>
@@ -54,12 +122,14 @@ export default function EditCuochopPage({ meeting, inviters }) {
                   <button
                     type="button"
                     className="text-green-700 font-medium bg-green-300 rounded-lg px-3 py-2 hover:opacity-80 duration-100"
+                    onClick={inviteAll}
                   >
                     Chọn tất cả
                   </button>
                   <button
                     type="button"
                     className="text-red-700 font-medium bg-red-300 rounded-lg px-3 py-2 hover:opacity-80 duration-100"
+                    onClick={discardAllInvites}
                   >
                     Bỏ chọn tất cả
                   </button>
@@ -69,7 +139,7 @@ export default function EditCuochopPage({ meeting, inviters }) {
                     <h1>Họ và tên</h1>
                     <h1>Mời</h1>
                   </div>
-                  {inviters.map((person) => (
+                  {chuHoFakes.map((person) => (
                     <div
                       className="grid grid-cols-2 gap-10 py-3 hover:bg-gray-50 duration-100"
                       key={person.hoKhau}
@@ -79,6 +149,7 @@ export default function EditCuochopPage({ meeting, inviters }) {
                         type="checkbox"
                         className="ml-2"
                         checked={person.invited}
+                        onChange={(e) => onChangeInvite(person.id)}
                       />
                     </div>
                   ))}
@@ -118,8 +189,6 @@ export async function getServerSideProps(context) {
       }
     );
 
-    console.log(inviters);
-
     return {
       props: { meeting, inviters },
     };
@@ -130,10 +199,3 @@ export async function getServerSideProps(context) {
     };
   }
 }
-
-const chuhoFakes = [
-  { id: 1, name: "Ha thi Tu", invited: true },
-  { id: 1, name: "Ha thi Tu", invited: true },
-  { id: 1, name: "Ha thi Tu", invited: false },
-  { id: 1, name: "Ha thi Tu", invited: true },
-];
