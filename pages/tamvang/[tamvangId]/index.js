@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
+import moment from "moment";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { getSession } from "next-auth/react";
-import { fetchAPI, parseInstantToDate } from "../../../utils";
+import { fetchAPI } from "../../../utils";
 
 export default function TamvangDetailpage({ tamvang }) {
   const { tamvangId } = useRouter().query;
@@ -45,11 +46,11 @@ export default function TamvangDetailpage({ tamvang }) {
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Từ ngày</h1>
-            <h1>{parseInstantToDate(tamvang.tuNgay)}</h1>
+            <h1>{moment(tamvang.tuNgay).format("DD-MM-YYYY")}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Đến ngày</h1>
-            <h1>{parseInstantToDate(tamvang.denNgay)}</h1>
+            <h1>{moment(tamvang.denNgay).format("DD-MM-YYYY")}</h1>
           </div>
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Lý do</h1>
