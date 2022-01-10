@@ -4,19 +4,23 @@ import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
 import Paginate from "../../components/common/Paginate";
+import Search from "../../components/common/Search";
 export default function HoKhauPage({ hoKhaus, totalPages }) {
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
         <div className="flex justify-between items-center pb-10 border-b">
           <h1 className="text-xl">Danh sách hộ khẩu</h1>
-          <Link
-            href="/hokhau/add"
-            className="flex items-center space-x-1 px-3 py-2 bg-blue-700 text-white rounded-lg hover:scale-105 duration-300"
-          >
-            <PlusIcon />
-            <span>Thêm hộ khẩu mới</span>
-          </Link>
+          <div className="flex items-center space-x-10">
+            <Search />
+            <Link
+              href="/hokhau/add"
+              className="flex items-center space-x-1 px-3 py-2 bg-blue-700 text-white rounded-lg hover:scale-105 duration-300"
+            >
+              <PlusIcon />
+              <span>Thêm hộ khẩu mới</span>
+            </Link>
+          </div>
         </div>
         <div className="">
           <div className="grid grid-cols-5 gap-5 text-gray-500">
