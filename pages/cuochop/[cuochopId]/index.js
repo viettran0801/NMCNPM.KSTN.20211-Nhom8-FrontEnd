@@ -7,7 +7,6 @@ import { getSession } from "next-auth/react";
 
 export default function CuochopDetailpage({ meetingDetail, diemDanh }) {
   const { cuochopId } = useRouter().query;
-
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -70,12 +69,12 @@ export default function CuochopDetailpage({ meetingDetail, diemDanh }) {
             </div>
             {diemDanh.map((person) => (
               <Link
-                href={`/cuochop/thongke/${person.id}`}
+                href={`/cuochop/thongke/${person.hoKhau}`}
                 className="grid grid-cols-4 gap-5 hover:bg-gray-50 py-3 rounded duration-50"
                 key={person.hoKhau}
               >
                 <h1>{person.hoTenChuHo}</h1>
-                <input type="checkbox" checked={person.diemDanh} />
+                <input type="checkbox" checked={person.diemDanh} readOnly />
                 <h1 className="col-span-2">{person.lyDo}</h1>
               </Link>
             ))}
@@ -93,24 +92,15 @@ export async function getServerSideProps(context) {
   const getMeetingDetailUrl = "/api/v1/cuochop/" + cuochopId;
   const getAttendanceUrl = "/api/v1/cuochop/" + cuochopId + "/diemdanh";
   try {
-    const res = await fetchAPI(getMeetingDetailUrl, {
-      method: "GET",
-      body: {},
+    const { result: meetingDetail } = await fetchAPI(getMeetingDetailUrl, {
       token: session.token,
-      params: [],
     });
 
-    var meetingDetail = res.result;
     meetingDetail.thoiGian = parseInstantToDateTime(meetingDetail.thoiGian);
 
-    const getDiemDanh = await fetchAPI(getAttendanceUrl, {
-      method: "GET",
-      body: {},
+    const { result: diemDanh } = await fetchAPI(getAttendanceUrl, {
       token: session.token,
-      params: [],
     });
-
-    const diemDanh = getDiemDanh.result;
 
     return {
       props: { meetingDetail, diemDanh },
@@ -118,10 +108,9 @@ export async function getServerSideProps(context) {
   } catch (err) {
     console.error(err);
     return {
-      props: { meetingDetail: {} },
+      props: {},
     };
   }
 }
 
 CuochopDetailpage.auth = true;
-
