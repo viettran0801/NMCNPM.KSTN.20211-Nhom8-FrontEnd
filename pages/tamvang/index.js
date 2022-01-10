@@ -4,7 +4,9 @@ import { PlusIcon } from "../../components/icons";
 import { getSession } from "next-auth/react";
 import { fetchAPI } from "../../utils";
 import moment from "moment";
-export default function TamVangPage({ tamVangs }) {
+
+import Paginate from "../../components/common/Paginate";
+export default function TamVangPage({ tamVangs, totalPages }) {
   return (
     <BaseLayout>
       <div className="m-5 rounded-2xl bg-white p-5 space-y-10">
@@ -42,6 +44,9 @@ export default function TamVangPage({ tamVangs }) {
             </Link>
           ))}
         </div>
+        <div className="flex justify-end">
+          <Paginate pageCount={totalPages} />
+        </div>
       </div>
     </BaseLayout>
   );
@@ -49,21 +54,18 @@ export default function TamVangPage({ tamVangs }) {
 
 TamVangPage.auth = true;
 export async function getServerSideProps(context) {
-  const getTamVangUrl = "/api/v1/tamvang";
   const session = await getSession(context);
-
+  const { page = 1 } = context.query;
   try {
-    const res = await fetchAPI(getTamVangUrl, {
-      method: "GET",
-      body: {},
+    const {
+      result: { content: tamVangs },
+      result: { totalPages },
+    } = await fetchAPI("/api/v1/tamvang", {
       token: session.token,
-      params: {},
+      params: { page: page - 1, size: 5, sort: "id,asc" },
     });
-
-    const tamVangs = res.result.content;
-
     return {
-      props: { tamVangs },
+      props: { tamVangs, totalPages },
     };
   } catch (err) {
     console.error(err);

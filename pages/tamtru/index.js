@@ -4,7 +4,8 @@ import { PlusIcon } from "../../components/icons";
 import { fetchAPI } from "../../utils";
 import { getSession } from "next-auth/react";
 import moment from "moment";
-export default function TamtruPage({ tamtrus }) {
+import Paginate from "../../components/common/Paginate";
+export default function TamtruPage({ tamtrus, totalPages }) {
   return (
     <BaseLayout>
       <div className="m-5 rounded-2xl bg-white p-5 space-y-10">
@@ -42,6 +43,9 @@ export default function TamtruPage({ tamtrus }) {
             </Link>
           ))}
         </div>
+        <div className="flex justify-end">
+          <Paginate pageCount={totalPages} />
+        </div>
       </div>
     </BaseLayout>
   );
@@ -50,19 +54,19 @@ TamtruPage.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  const { page = 1 } = context.query;
   try {
     const {
       result: { content: tamtrus },
+      result: { totalPages },
     } = await fetchAPI("/api/v1/tamtru", {
-      params: {
-        page: 0,
-        size: 10,
-      },
+      params: { page: page - 1, size: 5, sort: "id,asc" },
       token: session.token,
     });
     return {
       props: {
         tamtrus,
+        totalPages,
       },
     };
   } catch (err) {
