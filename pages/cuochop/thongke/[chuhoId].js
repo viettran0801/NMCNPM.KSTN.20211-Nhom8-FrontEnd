@@ -125,8 +125,8 @@ export default function ThongKePage({
             ))}
           </Tab.List>
           <Tab.Panels>
-            {listMeetings.map((meetings) => (
-              <Tab.Panel key={meetings.length}>
+            {listMeetings.map((meetings, idx) => (
+              <Tab.Panel key={idx}>
                 <div className="grid grid-cols-6 gap-5 text-gray-500">
                   <h1>Người tạo</h1>
                   <h1 className="col-span-2">Tiêu đề</h1>
