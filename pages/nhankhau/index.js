@@ -2,7 +2,8 @@ import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { fetchAPI, parseInstantToDateTime } from "../../utils";
 import { getSession } from "next-auth/react";
-export default function NhankhauPage({ nhanKhaus }) {
+import Paginate from "../../components/common/Paginate";
+export default function NhankhauPage({ nhanKhaus, totalPages }) {
   return (
     <BaseLayout>
       <div className="m-5 rounded-2xl bg-white py-10 px-5 space-y-10">
@@ -31,6 +32,10 @@ export default function NhankhauPage({ nhanKhaus }) {
             </Link>
           ))}
         </div>
+        <div className="flex justify-end">
+          <Paginate pageCount={totalPages} />
+        </div>
+        <Paginate />
       </div>
     </BaseLayout>
   );
@@ -39,19 +44,19 @@ NhankhauPage.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-
+  const { page = 1 } = context.query;
+  console.log(page);
   try {
     const {
       result: { content: nhanKhaus },
+      result: { totalPages },
     } = await fetchAPI("/api/v1/nhankhau", {
-      method: "GET",
-      body: {},
       token: session.token,
-      params: {},
+      params: { page: page - 1, size: 5, sort: "id,asc" },
     });
 
     return {
-      props: { nhanKhaus },
+      props: { nhanKhaus, totalPages },
     };
   } catch (err) {
     console.error(err);
