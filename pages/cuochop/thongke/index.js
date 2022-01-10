@@ -21,6 +21,7 @@ import { getSession } from "next-auth/react";
 import Moment from "moment";
 import { extendMoment } from "moment-range";
 import { split } from "moment-range-split";
+import { useRouter } from "next/router";
 
 const moment = extendMoment(Moment);
 
@@ -50,11 +51,56 @@ const options = {
   },
 };
 
-export default function ThongKePage({
-  participants,
-  dataMeeting,
-  dataMeetingCount,
-}) {
+export default function ThongKePage({ participants, thongke }) {
+  const { year = 1 } = useRouter().query;
+
+  const current = new Date();
+  const before = new Date();
+  before.setMonth(current.getMonth() - 12 * year);
+  const range = moment.range(before, current);
+  const ranges = split(range, "months");
+  console.log(thongke);
+
+  const dataMeeting = {
+    labels: ranges.map((r) =>
+      r.start.format("MM") == 12
+        ? r.start.format("M-YYYY")
+        : r.start.format("M")
+    ),
+    datasets: [
+      {
+        label: "Số cuộc họp",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        data: ranges.map((r) =>
+          thongke.cuocHops.reduce(
+            (pre, cuochop) =>
+              pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+            0
+          )
+        ),
+      },
+    ],
+  };
+
+  const dataMeetingCount = {
+    labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
+    datasets: [
+      {
+        data: [thongke.thamGia, thongke.vangKhongLyDo, thongke.vangCoLyDo],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 159, 64, 1)",
+        ],
+      },
+    ],
+  };
+
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -63,7 +109,7 @@ export default function ThongKePage({
             <h1 className="text-xl">Thống kê cuộc họp</h1>
             <Menu as="div" className="relative">
               <Menu.Button className="flex items-center space-x-3 px-3 py-2 border border-gray-300 rounded-lg hover:opacity-80 duration-100 focus:outline-none">
-                <span>1 năm gần nhất</span>
+                <span>{`${year} năm gần nhất`}</span>
                 <ChevronDownIcon className="w-5 h-5" />
               </Menu.Button>
               <Transition>
@@ -71,9 +117,12 @@ export default function ThongKePage({
                   {staticFilters.map((staticFilter) => (
                     <Menu.Item key={staticFilter.name}>
                       {({ active }) => (
-                        <button className="text-left w-full block px-3 py-2 hover:bg-blue-300 hover:text-white duration-100">
+                        <Link
+                          href={`/cuochop/thongke?year=${staticFilter.value}`}
+                          className="text-left w-full block px-3 py-2 hover:bg-gray-100 duration-100"
+                        >
                           {staticFilter.name}
-                        </button>
+                        </Link>
                       )}
                     </Menu.Item>
                   ))}
@@ -134,69 +183,29 @@ ThongKePage.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  const { year = 1 } = context.query;
   try {
     const { result: participants } = await fetchAPI(
       `/api/v1/cuochop/thongkenguoithamgia`,
       {
         token: session.token,
         params: {
-          years: 1,
+          years: year,
         },
       }
     );
-    const { result } = await fetchAPI(`/api/v1/cuochop/thongkecuochop`, {
-      token: session.token,
-      params: {
-        years: 1,
-      },
-    });
-    const current = new Date();
-    const before = new Date();
-    before.setMonth(current.getMonth() - 12);
-    const range = moment.range(before, current);
-    const ranges = split(range, "months");
-    const dataMeeting = {
-      labels: ranges.map((r) =>
-        r.start.format("MM") == 12
-          ? r.start.format("M-YYYY")
-          : r.start.format("M")
-      ),
-      datasets: [
-        {
-          label: "Số cuộc họp",
-          backgroundColor: "rgba(255, 99, 132, 0.5)",
-          data: ranges.map((r) =>
-            result.cuocHops.reduce(
-              (pre, cuochop) =>
-                pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
-              0
-            )
-          ),
+    const { result: thongke } = await fetchAPI(
+      `/api/v1/cuochop/thongkecuochop`,
+      {
+        token: session.token,
+        params: {
+          years: year,
         },
-      ],
-    };
-
-    const dataMeetingCount = {
-      labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
-      datasets: [
-        {
-          data: [result.thamGia, result.vangKhongLyDo, result.vangCoLyDo],
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.2)",
-            "rgba(54, 162, 235, 0.2)",
-            "rgba(255, 206, 86, 0.2)",
-          ],
-          borderColor: [
-            "rgba(255, 99, 132, 1)",
-            "rgba(54, 162, 235, 1)",
-            "rgba(255, 159, 64, 1)",
-          ],
-        },
-      ],
-    };
+      }
+    );
 
     return {
-      props: { participants, dataMeeting, dataMeetingCount },
+      props: { participants, thongke },
     };
   } catch (err) {
     console.error(err);
@@ -207,8 +216,8 @@ export async function getServerSideProps(context) {
 }
 
 const staticFilters = [
-  { name: "1 tháng gần nhất" },
-  { name: "3 tháng gần nhất" },
-  { name: "1 năm gần nhất" },
-  { name: "3 năm gần nhất" },
+  { name: "1 năm gần nhất", value: 1 },
+  { name: "2 năm gần nhất", value: 2 },
+  { name: "3 năm gần nhất", value: 3 },
+  { name: "5 năm gần nhất", value: 5 },
 ];
