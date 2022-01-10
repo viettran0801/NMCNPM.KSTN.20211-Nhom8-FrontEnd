@@ -20,7 +20,7 @@ import { getSession } from "next-auth/react";
 import Moment from "moment";
 import { extendMoment } from "moment-range";
 import { split } from "moment-range-split";
-
+import { useRouter } from "next/router";
 const moment = extendMoment(Moment);
 
 ChartJS.register(
@@ -48,12 +48,78 @@ const options = {
     },
   },
 };
-export default function ThongKePage({
-  participantDetail,
-  listMeetings,
-  dataMeetingCount,
-  dataMeeting,
-}) {
+export default function ThongKePage({ participantDetail, listMeetings }) {
+  const { year = 1, chuhoId } = useRouter().query;
+  const current = new Date();
+  const before = new Date();
+  before.setMonth(current.getMonth() - 12 * year);
+  const range = moment.range(before, current);
+  const ranges = split(range, "months");
+  const dataMeeting = {
+    labels: ranges.map((r) =>
+      r.start.format("MM") == 12
+        ? r.start.format("M-YYYY")
+        : r.start.format("M")
+    ),
+    datasets: [
+      {
+        label: "Số cuộc họp tham gia",
+        data: ranges.map((r) =>
+          participantDetail.cuocHopThamGia.reduce(
+            (pre, cuochop) =>
+              pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+            0
+          )
+        ),
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+      {
+        label: "Số cuộc họp vắng có lý do",
+        data: ranges.map((r) =>
+          participantDetail.cuocHopVangCoLyDo.reduce(
+            (pre, cuochop) =>
+              pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+            0
+          )
+        ),
+        backgroundColor: "rgba(255, 206, 86, 0.2)",
+      },
+      {
+        label: "Số cuộc họp vắng không có lý do",
+        data: ranges.map((r) =>
+          participantDetail.cuocHopVangKhongLyDo.reduce(
+            (pre, cuochop) =>
+              pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+            0
+          )
+        ),
+        backgroundColor: "rgba(54, 162, 235, 0.2)",
+      },
+    ],
+  };
+
+  const dataMeetingCount = {
+    labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
+    datasets: [
+      {
+        data: [
+          participantDetail.thamGia,
+          participantDetail.vangKhongLyDo,
+          participantDetail.vangCoLyDo,
+        ],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 159, 64, 1)",
+        ],
+      },
+    ],
+  };
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -62,7 +128,7 @@ export default function ThongKePage({
             <h1 className="text-xl">Thống kê cuộc họp theo chủ hộ</h1>
             <Menu as="div" className="relative">
               <Menu.Button className="flex items-center space-x-3 px-3 py-2 border border-gray-300 rounded-lg hover:opacity-80 duration-100 focus:outline-none">
-                <span>1 năm gần nhất</span>
+                <span>{`${year} năm gần nhất`}</span>
                 <ChevronDownIcon className="w-5 h-5" />
               </Menu.Button>
               <Transition>
@@ -70,9 +136,12 @@ export default function ThongKePage({
                   {staticFilters.map((staticFilter) => (
                     <Menu.Item key={staticFilter.name}>
                       {({ active }) => (
-                        <button className="text-left w-full block px-3 py-2 hover:bg-blue-300 hover:text-white duration-100">
+                        <Link
+                          href={`/cuochop/thongke/${chuhoId}?year=${staticFilter.value}`}
+                          className="text-left w-full block px-3 py-2 hover:bg-gray-100 duration-100"
+                        >
                           {staticFilter.name}
-                        </button>
+                        </Link>
                       )}
                     </Menu.Item>
                   ))}
@@ -158,7 +227,7 @@ ThongKePage.auth = true;
 
 export async function getServerSideProps(context) {
   const session = getSession(context);
-  const { chuhoId } = context.query;
+  const { chuhoId, year = 1 } = context.query;
 
   try {
     const { result: participantDetail } = await fetchAPI(
@@ -166,7 +235,7 @@ export async function getServerSideProps(context) {
       {
         token: session.token,
         params: {
-          years: 1,
+          years: year,
         },
       }
     );
@@ -177,79 +246,8 @@ export async function getServerSideProps(context) {
       participantDetail.cuocHopVangKhongLyDo,
     ];
 
-    const current = new Date();
-    const before = new Date();
-    before.setMonth(current.getMonth() - 12);
-    const range = moment.range(before, current);
-    const ranges = split(range, "months");
-    const dataMeeting = {
-      labels: ranges.map((r) =>
-        r.start.format("MM") == 12
-          ? r.start.format("M-YYYY")
-          : r.start.format("M")
-      ),
-      datasets: [
-        {
-          label: "Số cuộc họp tham gia",
-          data: ranges.map((r) =>
-            participantDetail.cuocHopThamGia.reduce(
-              (pre, cuochop) =>
-                pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
-              0
-            )
-          ),
-          backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-          label: "Số cuộc họp vắng có lý do",
-          data: ranges.map((r) =>
-            participantDetail.cuocHopVangCoLyDo.reduce(
-              (pre, cuochop) =>
-                pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
-              0
-            )
-          ),
-          backgroundColor: "rgba(255, 206, 86, 0.2)",
-        },
-        {
-          label: "Số cuộc họp vắng không có lý do",
-          data: ranges.map((r) =>
-            participantDetail.cuocHopVangKhongLyDo.reduce(
-              (pre, cuochop) =>
-                pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
-              0
-            )
-          ),
-          backgroundColor: "rgba(54, 162, 235, 0.2)",
-        },
-      ],
-    };
-
-    const dataMeetingCount = {
-      labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
-      datasets: [
-        {
-          data: [
-            participantDetail.thamGia,
-            participantDetail.vangKhongLyDo,
-            participantDetail.vangCoLyDo,
-          ],
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.2)",
-            "rgba(54, 162, 235, 0.2)",
-            "rgba(255, 206, 86, 0.2)",
-          ],
-          borderColor: [
-            "rgba(255, 99, 132, 1)",
-            "rgba(54, 162, 235, 1)",
-            "rgba(255, 159, 64, 1)",
-          ],
-        },
-      ],
-    };
-
     return {
-      props: { participantDetail, listMeetings, dataMeetingCount, dataMeeting },
+      props: { participantDetail, listMeetings },
     };
   } catch (err) {
     console.error(err);
@@ -259,13 +257,11 @@ export async function getServerSideProps(context) {
   }
 }
 
-const data = {};
-
 const tabs = ["Tham gia", "Vắng có lý do", "Vắng không có lý do"];
 
 const staticFilters = [
-  { name: "1 tháng gần nhất" },
-  { name: "3 tháng gần nhất" },
-  { name: "1 năm gần nhất" },
-  { name: "3 năm gần nhất" },
+  { name: "1 năm gần nhất", value: 1 },
+  { name: "2 năm gần nhất", value: 2 },
+  { name: "3 năm gần nhất", value: 3 },
+  { name: "5 năm gần nhất", value: 5 },
 ];
