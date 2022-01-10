@@ -16,9 +16,13 @@ import { Menu } from "@headlessui/react";
 import Transition from "../../../components/common/Transition";
 
 import { ChevronDownIcon } from "../../../components/icons";
-import moment from "moment";
 import { fetchAPI } from "../../../utils";
 import { getSession } from "next-auth/react";
+import Moment from "moment";
+import { extendMoment } from "moment-range";
+import { split } from "moment-range-split";
+
+const moment = extendMoment(Moment);
 
 ChartJS.register(
   CategoryScale,
@@ -30,7 +34,11 @@ ChartJS.register(
   ArcElement
 );
 
-export default function ThongKePage({ participants }) {
+export default function ThongKePage({
+  participants,
+  dataMeeting,
+  dataMeetingCount,
+}) {
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -66,10 +74,10 @@ export default function ThongKePage({ participants }) {
         </div>
         <div className="grid grid-cols-3 gap-10">
           <div className="col-span-2 flex items-center">
-            <Bar data={data} />
+            <Bar data={dataMeeting} />
           </div>
           <div className="flex items-center">
-            <Pie data={data2} />
+            <Pie data={dataMeetingCount} />
           </div>
         </div>
       </div>
@@ -120,8 +128,59 @@ export async function getServerSideProps(context) {
         },
       }
     );
+    const { result } = await fetchAPI(`/api/v1/cuochop/thongkecuochop`, {
+      token: session.token,
+      params: {
+        years: 1,
+      },
+    });
+    const current = new Date();
+    const before = new Date();
+    before.setMonth(current.getMonth() - 12);
+    const range = moment.range(before, current);
+    const ranges = split(range, "months");
+    const dataMeeting = {
+      labels: ranges.map((r) =>
+        r.start.format("MM") == 12
+          ? r.start.format("M-YYYY")
+          : r.start.format("M")
+      ),
+      datasets: [
+        {
+          label: "Số cuộc họp",
+          backgroundColor: "rgba(255, 99, 132, 0.5)",
+          data: ranges.map((r) =>
+            result.cuocHops.reduce(
+              (pre, cuochop) =>
+                pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+              0
+            )
+          ),
+        },
+      ],
+    };
+
+    const dataMeetingCount = {
+      labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
+      datasets: [
+        {
+          data: [result.thamGia, result.vangKhongLyDo, result.vangCoLyDo],
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.2)",
+            "rgba(54, 162, 235, 0.2)",
+            "rgba(255, 206, 86, 0.2)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 159, 64, 1)",
+          ],
+        },
+      ],
+    };
+
     return {
-      props: { participants },
+      props: { participants, dataMeeting, dataMeetingCount },
     };
   } catch (err) {
     console.error(err);
@@ -131,97 +190,6 @@ export async function getServerSideProps(context) {
   }
 }
 
-const data = {
-  labels: [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-  ],
-  datasets: [
-    {
-      label: "Số cuộc họp",
-      data: [
-        733, 255, 366, 556, 223, 140, 222, 733, 255, 366, 556, 223, 140, 222,
-      ],
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-  ],
-};
-
-const data2 = {
-  labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
-  datasets: [
-    {
-      data: [12, 19, 3],
-      backgroundColor: [
-        "rgba(255, 99, 132, 0.2)",
-        "rgba(54, 162, 235, 0.2)",
-        "rgba(255, 206, 86, 0.2)",
-      ],
-      borderColor: [
-        "rgba(255, 99, 132, 1)",
-        "rgba(54, 162, 235, 1)",
-        "rgba(255, 159, 64, 1)",
-      ],
-    },
-  ],
-};
-
-const familyFakes = [
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-    address: "123 đường A, phố B, tỉnh C",
-  },
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-
-    address: "123 đường A, phố B, tỉnh C",
-  },
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-
-    address: "123 đường A, phố B, tỉnh C",
-  },
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-    address: "123 đường A, phố B, tỉnh C",
-  },
-  {
-    id: 1,
-    name: "Ha Thi Tuan",
-    attend: 7,
-    asbentWithoutReason: 5,
-    absentWithReason: 3,
-    address: "123 đường A, phố B, tỉnh C",
-  },
-];
 const staticFilters = [
   { name: "1 tháng gần nhất" },
   { name: "3 tháng gần nhất" },
