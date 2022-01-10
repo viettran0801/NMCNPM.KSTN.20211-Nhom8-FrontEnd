@@ -250,7 +250,6 @@ export async function getServerSideProps(context) {
       props: { participantDetail, listMeetings },
     };
   } catch (err) {
-    console.error(err);
     return {
       props: {},
     };

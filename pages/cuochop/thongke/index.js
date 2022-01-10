@@ -10,18 +10,18 @@ import {
   ArcElement,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
-import BaseLayout from "../../../components/layouts/BaseLayout";
-import Link from "../../../components/common/Link";
 import { Menu } from "@headlessui/react";
-import Transition from "../../../components/common/Transition";
-
-import { ChevronDownIcon } from "../../../components/icons";
-import { fetchAPI } from "../../../utils";
 import { getSession } from "next-auth/react";
 import Moment from "moment";
 import { extendMoment } from "moment-range";
 import { split } from "moment-range-split";
 import { useRouter } from "next/router";
+import BaseLayout from "../../../components/layouts/BaseLayout";
+import Link from "../../../components/common/Link";
+import Transition from "../../../components/common/Transition";
+
+import { ChevronDownIcon } from "../../../components/icons";
+import { fetchAPI } from "../../../utils";
 
 const moment = extendMoment(Moment);
 
@@ -58,7 +58,6 @@ export default function ThongKePage({ participants, thongke }) {
   before.setMonth(current.getMonth() - 12 * year);
   const range = moment.range(before, current);
   const ranges = split(range, "months");
-  console.log(thongke);
 
   const dataMeeting = {
     labels: ranges.map((r) =>
@@ -207,7 +206,6 @@ export async function getServerSideProps(context) {
       props: { participants, thongke },
     };
   } catch (err) {
-    console.error(err);
     return {
       props: {},
     };
