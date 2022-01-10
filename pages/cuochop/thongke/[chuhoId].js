@@ -15,9 +15,13 @@ import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import { ChevronDownIcon } from "../../../components/icons";
 import Transition from "../../../components/common/Transition";
-import moment from "moment";
 import { fetchAPI } from "../../../utils";
 import { getSession } from "next-auth/react";
+import Moment from "moment";
+import { extendMoment } from "moment-range";
+import { split } from "moment-range-split";
+
+const moment = extendMoment(Moment);
 
 ChartJS.register(
   CategoryScale,
@@ -29,7 +33,27 @@ ChartJS.register(
   ArcElement
 );
 
-export default function ThongKePage({ participantDetail, listMeetings }) {
+const options = {
+  scales: {
+    y: {
+      ticks: {
+        beginAtZero: true,
+        callback: function (value) {
+          if (value % 1 === 0) {
+            return value;
+          }
+        },
+      },
+      suggestedMax: 5,
+    },
+  },
+};
+export default function ThongKePage({
+  participantDetail,
+  listMeetings,
+  dataMeetingCount,
+  dataMeeting,
+}) {
   return (
     <BaseLayout>
       <div className="m-10 rounded-2xl bg-white p-10 space-y-10">
@@ -75,10 +99,10 @@ export default function ThongKePage({ participantDetail, listMeetings }) {
         </div>
         <div className="grid grid-cols-3 gap-10">
           <div className="col-span-2 flex items-center">
-            <Bar data={data} />
+            <Bar data={dataMeeting} options={options} />
           </div>
           <div className="flex items-center">
-            <Pie data={data2} />
+            <Pie data={dataMeetingCount} />
           </div>
         </div>
       </div>
@@ -147,82 +171,95 @@ export async function getServerSideProps(context) {
       }
     );
 
-    var listMeetings = [];
-    listMeetings.push(participantDetail.cuocHopThamGia);
-    listMeetings.push(participantDetail.cuocHopVangCoLyDo);
-    listMeetings.push(participantDetail.cuocHopVangKhongLyDo);
+    const listMeetings = [
+      participantDetail.cuocHopThamGia,
+      participantDetail.cuocHopVangCoLyDo,
+      participantDetail.cuocHopVangKhongLyDo,
+    ];
+
+    const current = new Date();
+    const before = new Date();
+    before.setMonth(current.getMonth() - 12);
+    const range = moment.range(before, current);
+    const ranges = split(range, "months");
+    const dataMeeting = {
+      labels: ranges.map((r) =>
+        r.start.format("MM") == 12
+          ? r.start.format("M-YYYY")
+          : r.start.format("M")
+      ),
+      datasets: [
+        {
+          label: "Số cuộc họp tham gia",
+          data: ranges.map((r) =>
+            participantDetail.cuocHopThamGia.reduce(
+              (pre, cuochop) =>
+                pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+              0
+            )
+          ),
+          backgroundColor: "rgba(255, 99, 132, 0.5)",
+        },
+        {
+          label: "Số cuộc họp vắng có lý do",
+          data: ranges.map((r) =>
+            participantDetail.cuocHopVangCoLyDo.reduce(
+              (pre, cuochop) =>
+                pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+              0
+            )
+          ),
+          backgroundColor: "rgba(255, 206, 86, 0.2)",
+        },
+        {
+          label: "Số cuộc họp vắng không có lý do",
+          data: ranges.map((r) =>
+            participantDetail.cuocHopVangKhongLyDo.reduce(
+              (pre, cuochop) =>
+                pre + (moment(cuochop.thoiGian).within(r) ? 1 : 0),
+              0
+            )
+          ),
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+        },
+      ],
+    };
+
+    const dataMeetingCount = {
+      labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
+      datasets: [
+        {
+          data: [
+            participantDetail.thamGia,
+            participantDetail.vangKhongLyDo,
+            participantDetail.vangCoLyDo,
+          ],
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.2)",
+            "rgba(54, 162, 235, 0.2)",
+            "rgba(255, 206, 86, 0.2)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 159, 64, 1)",
+          ],
+        },
+      ],
+    };
 
     return {
-      props: { participantDetail, listMeetings },
+      props: { participantDetail, listMeetings, dataMeetingCount, dataMeeting },
     };
   } catch (err) {
     console.error(err);
     return {
-      props: { participantDetail: {}, listMeetings: [] },
+      props: {},
     };
   }
 }
 
-const data = {
-  labels: [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-  ],
-  datasets: [
-    {
-      label: "Số cuộc họp tham gia",
-      data: [
-        733, 255, 366, 556, 223, 140, 222, 733, 255, 366, 556, 223, 140, 222,
-      ],
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Số cuộc họp vắng có lý do",
-      data: [
-        140, 222, 733, 255, 366, 556, 223, 140, 222, 733, 255, 366, 556, 223,
-      ],
-      backgroundColor: "rgba(255, 206, 86, 0.2)",
-    },
-    {
-      label: "Số cuộc họp vắng không có lý do",
-      data: [
-        366, 556, 223, 140, 222, 733, 255, 366, 556, 223, 140, 222, 733, 255,
-      ],
-      backgroundColor: "rgba(54, 162, 235, 0.2)",
-    },
-  ],
-};
-
-const data2 = {
-  labels: ["Tham gia", "Vắng không có lý do", "Vắng có lý do"],
-  datasets: [
-    {
-      data: [12, 19, 3],
-      backgroundColor: [
-        "rgba(255, 99, 132, 0.2)",
-        "rgba(54, 162, 235, 0.2)",
-        "rgba(255, 206, 86, 0.2)",
-      ],
-      borderColor: [
-        "rgba(255, 99, 132, 1)",
-        "rgba(54, 162, 235, 1)",
-        "rgba(255, 159, 64, 1)",
-      ],
-    },
-  ],
-};
+const data = {};
 
 const tabs = ["Tham gia", "Vắng có lý do", "Vắng không có lý do"];
 
@@ -231,76 +268,4 @@ const staticFilters = [
   { name: "3 tháng gần nhất" },
   { name: "1 năm gần nhất" },
   { name: "3 năm gần nhất" },
-];
-
-const cuochopFakes = [
-  [
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Tuấn",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-  ],
-  [
-    {
-      id: 1,
-      creator: "Hà Thị Trung",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Trung",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-    {
-      id: 1,
-      creator: "Hà Thị Trung",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-  ],
-  [
-    {
-      id: 1,
-      creator: "Hà Thị Gay",
-      address: "123 đường A, phố B, huyện C, tỉnh D",
-      title: "Họp thông đít",
-      time: "13:00 13/3/1333",
-    },
-  ],
 ];

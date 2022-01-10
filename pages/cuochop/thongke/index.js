@@ -34,6 +34,22 @@ ChartJS.register(
   ArcElement
 );
 
+const options = {
+  scales: {
+    y: {
+      ticks: {
+        beginAtZero: true,
+        callback: function (value) {
+          if (value % 1 === 0) {
+            return value;
+          }
+        },
+      },
+      suggestedMax: 5,
+    },
+  },
+};
+
 export default function ThongKePage({
   participants,
   dataMeeting,
@@ -74,7 +90,7 @@ export default function ThongKePage({
         </div>
         <div className="grid grid-cols-3 gap-10">
           <div className="col-span-2 flex items-center">
-            <Bar data={dataMeeting} />
+            <Bar data={dataMeeting} options={options} />
           </div>
           <div className="flex items-center">
             <Pie data={dataMeetingCount} />
