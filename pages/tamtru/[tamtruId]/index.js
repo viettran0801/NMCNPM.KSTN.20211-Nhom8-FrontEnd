@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import { fetchAPI } from "../../../utils";
-import { getSession } from "next-auth/react";
 export default function TamtruDetailpage({ tamtru }) {
   const { tamtruId } = useRouter().query;
   return (
