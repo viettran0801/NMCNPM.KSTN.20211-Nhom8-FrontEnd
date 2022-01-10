@@ -1,8 +1,8 @@
+import { getSession } from "next-auth/react";
+import { fetchAPI } from "../../utils";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
-import { getSession } from "next-auth/react";
-import { fetchAPI } from "../../utils";
 import Paginate from "../../components/common/Paginate";
 export default function HoKhauPage({ hoKhaus, totalPages }) {
   return (
@@ -62,9 +62,8 @@ export async function getServerSideProps(context) {
       props: { hoKhaus, totalPages },
     };
   } catch (err) {
-    console.error(err);
     return {
-      props: { hoKhaus: [] },
+      props: {},
     };
   }
 }

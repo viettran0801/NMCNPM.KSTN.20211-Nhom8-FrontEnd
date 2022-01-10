@@ -1,13 +1,13 @@
 import { useRouter } from "next/router";
 import { Form, Formik } from "formik";
-import BaseLayout from "../../../components/layouts/BaseLayout";
-import Link from "../../../components/common/Link";
-import Input from "../../../components/common/Input";
-import { getSession, useSession } from "next-auth/react";
-import { fetchAPI } from "../../../utils";
 import moment from "moment";
 import { useState } from "react";
 import { Field } from "formik";
+import { getSession, useSession } from "next-auth/react";
+import BaseLayout from "../../../components/layouts/BaseLayout";
+import Link from "../../../components/common/Link";
+import Input from "../../../components/common/Input";
+import { fetchAPI } from "../../../utils";
 
 export default function EditNhanKhauPage({ nhanKhau }) {
   const router = useRouter();
@@ -160,7 +160,6 @@ export async function getServerSideProps(context) {
       props: { nhanKhau },
     };
   } catch (err) {
-    console.error(err);
     return {
       props: { nhanKhau: {} },
     };
