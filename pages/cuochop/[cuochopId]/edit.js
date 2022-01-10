@@ -6,7 +6,7 @@ import Input from "../../../components/common/Input";
 import { getSession } from "next-auth/react";
 import moment from "moment";
 import { fetchAPI } from "../../../utils";
-export default function EditCuochopPage({ meeting, attendances }) {
+export default function EditCuochopPage({ meeting, inviters }) {
   console.log(meeting);
   const router = useRouter();
   const { cuochopId } = router.query;
@@ -69,7 +69,7 @@ export default function EditCuochopPage({ meeting, attendances }) {
                     <h1>Họ và tên</h1>
                     <h1>Mời</h1>
                   </div>
-                  {attendances.map((person) => (
+                  {inviters.map((person) => (
                     <div
                       className="grid grid-cols-2 gap-10 py-3 hover:bg-gray-50 duration-100"
                       key={person.hoKhau}
@@ -111,20 +111,22 @@ export async function getServerSideProps(context) {
       token: session.token,
     });
 
-    const { result: attendances } = await fetchAPI(
-      `/api/v1/cuochop/${cuochopId}/diemdanh`,
+    const { result: inviters } = await fetchAPI(
+      `/api/v1/cuochop/danhsachthamgia/${cuochopId}`,
       {
         token: session.token,
       }
     );
 
+    console.log(inviters);
+
     return {
-      props: { meeting, attendances },
+      props: { meeting, inviters },
     };
   } catch (err) {
     console.error(err);
     return {
-      props: { meeting: {}, attendances: {} },
+      props: { meeting: {}, inviters: {} },
     };
   }
 }
