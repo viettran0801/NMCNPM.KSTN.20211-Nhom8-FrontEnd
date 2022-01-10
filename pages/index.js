@@ -1,7 +1,7 @@
 import { getSession } from "next-auth/react";
+import moment from "moment";
 import BaseLayout from "../components/layouts/BaseLayout";
 import { convertTimeAgo, fetchAPI } from "../utils";
-import moment from "moment";
 export default function Home({ metadata, recentActivities, meetings }) {
   return (
     <BaseLayout>
@@ -121,7 +121,6 @@ export async function getServerSideProps(context) {
       props: { metadata, recentActivities, meetings },
     };
   } catch (err) {
-    console.log(err.message);
     return {
       props: {},
     };
