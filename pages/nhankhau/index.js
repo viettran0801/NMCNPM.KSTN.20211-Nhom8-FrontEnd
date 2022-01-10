@@ -1,6 +1,6 @@
 import BaseLayout from "../../components/layouts/BaseLayout";
 import Link from "../../components/common/Link";
-import { fetchAPI, parseInstantToDateTime } from "../../utils";
+import { fetchAPI } from "../../utils";
 import { getSession } from "next-auth/react";
 import Paginate from "../../components/common/Paginate";
 export default function NhankhauPage({ nhanKhaus, totalPages }) {
