@@ -4,8 +4,8 @@ import { PlusIcon } from "../../components/icons";
 import { fetchAPI } from "../../utils";
 import { getSession } from "next-auth/react";
 import moment from "moment";
-
-export default function CuochopPage({ dataMeetings }) {
+import Paginate from "../../components/common/Paginate";
+export default function CuochopPage({ dataMeetings, totalPages }) {
   return (
     <BaseLayout>
       <div className="m-5 rounded-2xl bg-white p-5 space-y-10">
@@ -58,6 +58,9 @@ export default function CuochopPage({ dataMeetings }) {
             </Link>
           ))}
         </div>
+        <div className="flex justify-end">
+          <Paginate pageCount={totalPages} />
+        </div>
       </div>
     </BaseLayout>
   );
@@ -66,16 +69,18 @@ CuochopPage.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-
+  const { page = 1 } = context.query;
   try {
     const {
       result: { content: dataMeetings },
+      result: { totalPages },
     } = await fetchAPI("/api/v1/cuochop", {
       token: session.token,
+      params: { page: page - 1, size: 5, sort: "id,asc" },
     });
 
     return {
-      props: { dataMeetings }, // will be passed to the page component as props
+      props: { dataMeetings, totalPages }, // will be passed to the page component as props
     };
   } catch (err) {
     console.error(err);

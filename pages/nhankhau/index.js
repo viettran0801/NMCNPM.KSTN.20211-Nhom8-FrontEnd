@@ -35,7 +35,6 @@ export default function NhankhauPage({ nhanKhaus, totalPages }) {
         <div className="flex justify-end">
           <Paginate pageCount={totalPages} />
         </div>
-        <Paginate />
       </div>
     </BaseLayout>
   );
@@ -45,7 +44,6 @@ NhankhauPage.auth = true;
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   const { page = 1 } = context.query;
-  console.log(page);
   try {
     const {
       result: { content: nhanKhaus },
