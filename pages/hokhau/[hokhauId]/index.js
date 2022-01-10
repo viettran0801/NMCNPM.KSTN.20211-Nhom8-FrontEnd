@@ -91,9 +91,8 @@ export async function getServerSideProps(context) {
       props: { hoKhau },
     };
   } catch (err) {
-    console.error(err);
     return {
-      props: { hoKhau: {} },
+      props: {},
     };
   }
 }

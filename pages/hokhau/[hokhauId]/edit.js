@@ -1,15 +1,15 @@
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
+import moment from "moment";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import Input from "../../../components/common/Input";
 import AddNhanKhauModel from "../../../components/nhankhau/AddNhanKhauModel";
 import { TrashIcon } from "../../../components/icons";
-import { getSession } from "next-auth/react";
 import { fetchAPI } from "../../../utils";
-import moment from "moment";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
 
 export default function AddHoKhauPage({ hoKhau }) {
   const router = useRouter();
@@ -152,9 +152,8 @@ export async function getServerSideProps(context) {
       props: { hoKhau },
     };
   } catch (err) {
-    console.error(err);
     return {
-      props: { hoKhau: {} },
+      props: {},
     };
   }
 }

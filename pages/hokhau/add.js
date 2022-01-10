@@ -1,14 +1,14 @@
 import { useRouter } from "next/router";
 import { Form, Formik } from "formik";
+import { useState } from "react";
+import moment from "moment";
+import { useSession } from "next-auth/react";
 import Link from "../../components/common/Link";
 import Input from "../../components/common/Input";
 import { TrashIcon } from "../../components/icons";
 import BaseLayout from "../../components/layouts/BaseLayout";
 import AddNhanKhauModel from "../../components/nhankhau/AddNhanKhauModel";
-import { useState } from "react";
-import moment from "moment";
 import { fetchAPI } from "../../utils";
-import { useSession } from "next-auth/react";
 export default function AddHoKhauPage() {
   const router = useRouter();
   const [nhanKhaus, setNhanKhaus] = useState([]);
