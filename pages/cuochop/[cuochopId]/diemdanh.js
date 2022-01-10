@@ -1,11 +1,9 @@
 import { useRouter } from "next/router";
-import { PencilIcon } from "../../../components/icons";
+import moment from "moment";
+import { getSession } from "next-auth/react";
+import { fetchAPI } from "../../../utils";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
-import { Field, Form, Formik } from "formik";
-import moment from "moment";
-import { fetchAPI } from "../../../utils";
-import { getSession } from "next-auth/react";
 import DiemDanh from "../../../components/diemdanh/DiemDanh";
 export default function CuochopDetailpage({ meeting, persons }) {
   const { cuochopId } = useRouter().query;
@@ -80,7 +78,6 @@ export async function getServerSideProps(context) {
       props: { meeting, persons },
     };
   } catch (err) {
-    console.error(err);
     return {
       props: {},
     };
