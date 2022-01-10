@@ -18,7 +18,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
 function Auth({ children }) {
   const router = useRouter();
-  const { data: session, status } = useSession({
+  const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
       router.push("/auth/login");
