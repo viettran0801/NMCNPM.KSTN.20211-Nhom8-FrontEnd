@@ -11,11 +11,9 @@ import { useState } from "react";
 export default function EditCuochopPage({ meeting, inviters }) {
   const router = useRouter();
   const { cuochopId } = router.query;
-  var chuHoFakes = inviters;
+  const chuHoFakes = inviters;
   const { data: session } = useSession();
   const [mois, setMois] = useState([]);
-
-  var isInitialize = false;
 
   const inviteAll = () => {
     setMois([]);
@@ -193,9 +191,8 @@ export async function getServerSideProps(context) {
       props: { meeting, inviters },
     };
   } catch (err) {
-    console.error(err);
     return {
-      props: { meeting: {}, inviters: {} },
+      props: {},
     };
   }
 }
