@@ -105,7 +105,7 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
   const { tamvangId } = await context.query;
   try {
-    const { result: tamvang } = await fetchAPI(`/api/v1/tamtru/${tamvangId}`, {
+    const { result: tamvang } = await fetchAPI(`/api/v1/tamvang/${tamvangId}`, {
       token: session.token,
     });
     return {

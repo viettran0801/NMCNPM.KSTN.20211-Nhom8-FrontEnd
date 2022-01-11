@@ -50,7 +50,11 @@ export default function TamvangDetailpage({ tamvang }) {
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Đến ngày</h1>
-            <h1>{moment(tamvang.denNgay).format("DD-MM-YYYY")}</h1>
+            <h1>
+              {tamvang.denNgay
+                ? moment(tamvang.denNgay).format("DD-MM-YYYY")
+                : "Chưa rõ"}
+            </h1>
           </div>
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Lý do</h1>
@@ -67,7 +71,7 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
   const { tamvangId } = await context.query;
   try {
-    const { result: tamvang } = await fetchAPI(`/api/v1/tamtru/${tamvangId}`, {
+    const { result: tamvang } = await fetchAPI(`/api/v1/tamvang/${tamvangId}`, {
       token: session.token,
     });
     return {
