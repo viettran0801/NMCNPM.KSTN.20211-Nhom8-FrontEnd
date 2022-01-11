@@ -5,6 +5,8 @@ import Link from "../../components/common/Link";
 import { PlusIcon } from "../../components/icons";
 import Paginate from "../../components/common/Paginate";
 import { fetchAPI } from "../../utils";
+import Search from "../../components/common/Search";
+
 export default function CuochopPage({ dataMeetings, totalPages }) {
   return (
     <BaseLayout>
@@ -12,6 +14,7 @@ export default function CuochopPage({ dataMeetings, totalPages }) {
         <div className="flex justify-between items-center pb-5 border-b">
           <h1 className="text-xl">Danh sách cuộc họp</h1>
           <div className="flex space-x-3">
+            <Search />
             <Link
               href="/cuochop/add"
               className="flex items-center space-x-1 px-3 py-2 bg-blue-700 text-white rounded-lg hover:opacity-80 duration-300"
@@ -69,14 +72,14 @@ CuochopPage.auth = true;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  const { page = 1 } = context.query;
+  const { page = 1, search = "" } = context.query;
   try {
     const {
       result: { content: dataMeetings },
       result: { totalPages },
     } = await fetchAPI("/api/v1/cuochop", {
       token: session.token,
-      params: { page: page - 1, size: 5, sort: "id,asc" },
+      params: { page: page - 1, size: 5, sort: "id,asc", keyword: search },
     });
 
     return {
