@@ -44,27 +44,40 @@ export default function AddTamtruPage() {
                 body: {
                   ...values,
                   tuNgay: moment(values.tuNgay + "Z").toISOString(),
-                  denNgay: moment(values.denNgay + "Z").toISOString(),
+                  denNgay:
+                    values.denNgay == ""
+                      ? ""
+                      : moment(values.denNgay + "Z").toISOString(),
                 },
                 token: session.token,
               });
               router.push(`/tamtru/${result.id}`);
             } catch (err) {
-              setErrorMessage(err.message);
+              setErrorMessage("Có lỗi xảy ra");
             }
           }}
         >
           {({ isSubmitting }) => (
             <Form className="grid grid-cols-2 gap-x-20 gap-y-10">
-              <Input label="Họ và tên" name="hoVaTen" />
+              <Input label="Họ và tên" name="hoVaTen" required={true} />
               <Input label="Số CMND/CCCD" name="cccd" />
               <div className=" col-span-2">
-                <Input label="Địa chỉ" name="diaChi" />
+                <Input label="Địa chỉ" name="diaChi" required={true} />
               </div>
-              <Input label="Từ ngày" name="tuNgay" type="date" />
+              <Input
+                label="Từ ngày"
+                name="tuNgay"
+                type="date"
+                required={true}
+              />
               <Input label="Đến ngày" name="denNgay" type="date" />
               <div className="col-span-2">
-                <Input label="Lý do" name="lyDo" type="textarea" />
+                <Input
+                  label="Lý do"
+                  name="lyDo"
+                  type="textarea"
+                  required={true}
+                />
               </div>
               <p className="text-red-700 col-span-2">{errorMessage}</p>
               <div>

@@ -49,7 +49,11 @@ export default function TamtruDetailpage({ tamtru }) {
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Đến ngày</h1>
-            <h1>{moment(tamtru.denNgay).format("DD-MM-YYYY")}</h1>
+            <h1>
+              {tamtru.denNgay
+                ? moment(tamtru.denNgay).format("DD-MM-YYYY")
+                : "Chưa rõ"}
+            </h1>
           </div>
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Lý do</h1>

@@ -44,7 +44,11 @@ export default function TamVangPage({ tamVangs, totalPages }) {
               <h1>{item.cccd}</h1>
               <h1 className="col-span-2">{item.diaChi}</h1>
               <h1>{moment(item.tuNgay).format("DD-MM-YYYY")}</h1>
-              <h1>{moment(item.denNgay).format("DD-MM-YYYY")}</h1>
+              <h1>
+                {item.denNgay
+                  ? moment(item.denNgay).format("DD-MM-YYYY")
+                  : "Chưa rõ"}
+              </h1>
             </Link>
           ))}
         </div>

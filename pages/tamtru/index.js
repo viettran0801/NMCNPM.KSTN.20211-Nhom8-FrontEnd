@@ -43,7 +43,11 @@ export default function TamtruPage({ tamtrus, totalPages }) {
               <h1>{tamtru.cccd}</h1>
               <h1 className="col-span-2">{tamtru.diaChi}</h1>
               <h1>{moment(tamtru.tuNgay).format("DD-MM-YYYY")}</h1>
-              <h1>{moment(tamtru.denNgay).format("DD-MM-YYYY")}</h1>
+              <h1>
+                {tamtru.denNgay
+                  ? moment(tamtru.denNgay).format("DD-MM-YYYY")
+                  : "Chưa rõ"}
+              </h1>
             </Link>
           ))}
         </div>

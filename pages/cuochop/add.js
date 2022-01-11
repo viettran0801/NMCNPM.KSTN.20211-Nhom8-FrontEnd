@@ -12,6 +12,7 @@ export default function AddCuochopPage({ inviters }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [mois, setMois] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   var chuHoFakes = inviters;
 
@@ -86,24 +87,30 @@ export default function AddCuochopPage({ inviters }) {
               setSubmitting(false);
               router.push(`/cuochop/${result.id}`);
             } catch (err) {
-              setErrorMessage(err.message);
+              setErrorMessage("Có lỗi xảy ra");
             }
           }}
         >
           {({ isSubmitting }) => (
             <Form className="space-y-10">
-              <Input label="Tiêu đề" name="tieuDe" />
+              <Input label="Tiêu đề" name="tieuDe" required={true} />
               <div className="grid grid-cols-3 gap-10">
                 <Input
                   label="Thời gian"
                   name="thoiGian"
                   type="datetime-local"
+                  required={true}
                 />
                 <div className="col-span-2">
-                  <Input label="Địa điểm" name="diaDiem" />
+                  <Input label="Địa điểm" name="diaDiem" required={true} />
                 </div>
               </div>
-              <Input label="Nội dung" name="noiDung" type="textarea" />
+              <Input
+                label="Nội dung"
+                name="noiDung"
+                type="textarea"
+                required={true}
+              />
               <div className="space-y-10">
                 <div className="flex space-x-3 items-center pb-10 border-b">
                   <h1 className="text-lg">Danh sách tham gia</h1>
@@ -143,6 +150,7 @@ export default function AddCuochopPage({ inviters }) {
                   ))}
                 </div>
               </div>
+              <p className="text-red-700">{errorMessage}</p>
               <div>
                 <button
                   type="submit"

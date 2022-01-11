@@ -14,6 +14,7 @@ export default function EditCuochopPage({ meeting, inviters }) {
   const chuHoFakes = inviters;
   const { data: session } = useSession();
   const [mois, setMois] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const inviteAll = () => {
     setMois([]);
@@ -96,7 +97,7 @@ export default function EditCuochopPage({ meeting, inviters }) {
               setSubmitting(false);
               router.push(`/cuochop/${result.id}`);
             } catch (err) {
-              setErrorMessage(err.message);
+              setErrorMessage("Có lỗi xảy ra");
             }
           }}
         >
@@ -153,6 +154,7 @@ export default function EditCuochopPage({ meeting, inviters }) {
                   ))}
                 </div>
               </div>
+              <p className="text-red-700">{errorMessage}</p>
               <div>
                 <button
                   type="submit"

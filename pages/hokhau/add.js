@@ -55,16 +55,24 @@ export default function AddHoKhauPage() {
               });
               router.push(`/hokhau/${result.id}`);
             } catch (err) {
-              setErrorMessage(err.message);
+              setErrorMessage("Có lỗi xảy ra");
             }
           }}
         >
           {({ isSubmitting }) => (
             <Form className="grid grid-cols-2 gap-x-20 gap-y-10">
-              <Input label="Họ và tên chủ hộ" name="hoTenChuHo" />
-              <Input label="Số CMND/CCCD của chủ hộ" name="cccdChuHo" />
+              <Input
+                label="Họ và tên chủ hộ"
+                name="hoTenChuHo"
+                required={true}
+              />
+              <Input
+                label="Số CMND/CCCD của chủ hộ"
+                name="cccdChuHo"
+                required={true}
+              />
               <div className=" col-span-2">
-                <Input label="Địa chỉ" name="diaChi" />
+                <Input label="Địa chỉ" name="diaChi" required={true} />
               </div>
               <div className="space-y-10 col-span-2">
                 <div className="flex items-center space-x-10 pb-10 border-b">
