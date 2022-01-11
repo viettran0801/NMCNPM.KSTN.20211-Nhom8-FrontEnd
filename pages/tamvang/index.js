@@ -66,7 +66,7 @@ export async function getServerSideProps(context) {
       result: { totalPages },
     } = await fetchAPI("/api/v1/tamvang", {
       token: session.token,
-      params: { page: page - 1, size: 5, sort: "id,asc", keyword: search },
+      params: { page: page - 1, size: 5, sort: "id,desc", keyword: search },
     });
     return {
       props: { tamVangs, totalPages },

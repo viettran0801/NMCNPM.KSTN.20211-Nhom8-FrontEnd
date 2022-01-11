@@ -79,7 +79,12 @@ export async function getServerSideProps(context) {
       result: { totalPages },
     } = await fetchAPI("/api/v1/cuochop", {
       token: session.token,
-      params: { page: page - 1, size: 5, sort: "id,asc", keyword: search },
+      params: {
+        page: page - 1,
+        size: 5,
+        sort: "id,DESC",
+        keyword: search,
+      },
     });
 
     return {
