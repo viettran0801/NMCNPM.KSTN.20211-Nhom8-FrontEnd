@@ -113,7 +113,7 @@ export default function AddNhanKhauModel({ addNhanKhau }) {
                       addNhanKhau(result);
                       closeModal();
                     } catch (err) {
-                      setErrorMessage(err.message);
+                      setErrorMessage("Có lỗi xảy ra");
                     }
                   }}
                 >

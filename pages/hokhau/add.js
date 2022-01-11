@@ -55,7 +55,7 @@ export default function AddHoKhauPage() {
               });
               router.push(`/hokhau/${result.id}`);
             } catch (err) {
-              setErrorMessage(err.message);
+              setErrorMessage("Có lỗi xảy ra");
             }
           }}
         >

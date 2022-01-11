@@ -44,13 +44,16 @@ export default function AddTamtruPage() {
                 body: {
                   ...values,
                   tuNgay: moment(values.tuNgay + "Z").toISOString(),
-                  denNgay: moment(values.denNgay + "Z").toISOString(),
+                  denNgay:
+                    values.denNgay == ""
+                      ? ""
+                      : moment(values.denNgay + "Z").toISOString(),
                 },
                 token: session.token,
               });
               router.push(`/tamtru/${result.id}`);
             } catch (err) {
-              setErrorMessage(err.message);
+              setErrorMessage("Có lỗi xảy ra");
             }
           }}
         >

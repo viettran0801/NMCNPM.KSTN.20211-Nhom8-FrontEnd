@@ -46,7 +46,10 @@ export default function EditTamtruPage({ tamtru }) {
                 body: {
                   ...values,
                   tuNgay: moment(values.tuNgay + "Z").toISOString(),
-                  denNgay: moment(values.denNgay + "Z").toISOString(),
+                  denNgay:
+                    values.denNgay == ""
+                      ? ""
+                      : moment(values.denNgay + "Z").toISOString(),
                 },
                 token: session.token,
               });
