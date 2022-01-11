@@ -1,11 +1,13 @@
-Code giao diện bài tập lớn công nghệ phần mềm nhóm 8
+# NMCNPM.KSTN.20211-Nhom8-FrontEnd
 
-Thành viên
+[Link giao diện](https://cnpm-nhom8.vercel.app/)
 
-Nghiêm Việt Thắng 20190051
+### Thành viên
 
-Nguyễn Văn Trung 20190071
+- Nghiêm Việt Thắng 20190088
 
-Hà Đức Tuấn 20190072
+- Nguyễn Văn Trung 20190071
 
-Trần Quốc Việt 20190075
+- Hà Đức Tuấn 20190072
+
+- Trần Quốc Việt 20190075
