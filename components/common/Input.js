@@ -1,8 +1,17 @@
 import { Field, ErrorMessage } from "formik";
-export default function Input({ label, name, type = "text", ...otherProps }) {
+export default function Input({
+  label,
+  name,
+  type = "text",
+  required = false,
+  ...otherProps
+}) {
   return (
     <div className="space-y-1">
-      <label className="text-gray-500 text">{label}</label>
+      <label className="text-gray-500 text space-x-3">
+        <span>{label}</span>
+        {required && <span className="text-red-700">*</span>}
+      </label>
       <Field
         type={type}
         name={name}
