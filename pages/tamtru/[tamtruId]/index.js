@@ -4,6 +4,7 @@ import { PencilIcon } from "../../../components/icons";
 import BaseLayout from "../../../components/layouts/BaseLayout";
 import Link from "../../../components/common/Link";
 import { fetchAPI } from "../../../utils";
+import moment from "moment";
 export default function TamtruDetailpage({ tamtru }) {
   const { tamtruId } = useRouter().query;
   return (
@@ -44,11 +45,11 @@ export default function TamtruDetailpage({ tamtru }) {
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Từ ngày</h1>
-            <h1>{tamtru.tuNgay}</h1>
+            <h1>{moment(tamtru.tuNgay).format("DD-MM-YYYY")}</h1>
           </div>
           <div className="space-y-3">
             <h1 className="text-gray-500">Đến ngày</h1>
-            <h1>{tamtru.denNgay}</h1>
+            <h1>{moment(tamtru.denNgay).format("DD-MM-YYYY")}</h1>
           </div>
           <div className="col-span-2 space-y-3">
             <h1 className="text-gray-500">Lý do</h1>
