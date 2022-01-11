@@ -118,7 +118,7 @@ export async function getServerSideProps(context) {
         params: {
           page: 0,
           size: 5,
-          sort: "thoiGian,DESC",
+          sort: "id,DESC",
         },
         token: session.token,
       }),
