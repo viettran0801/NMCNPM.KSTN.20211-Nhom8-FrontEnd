@@ -120,11 +120,12 @@ export default function AddNhanKhauModel({ addNhanKhau }) {
                   {({ isSubmitting }) => (
                     <Form className="space-y-5">
                       <div className="grid grid-cols-2 gap-10">
-                        <Input label="Họ và tên" name="hoVaTen" />
                         <Input
-                          label="Tên gọi khác (nếu có)"
-                          name="hoVaTenKhac"
+                          label="Họ và tên"
+                          name="hoVaTen"
+                          required={true}
                         />
+                        <Input label="Tên gọi khác" name="hoVaTenKhac" />
                       </div>
                       <div className="grid grid-cols-2 gap-10">
                         <div className="w-fit">
@@ -132,10 +133,14 @@ export default function AddNhanKhauModel({ addNhanKhau }) {
                             label="Ngày sinh"
                             name="ngaySinh"
                             type="date"
+                            required={true}
                           />
                         </div>
                         <div className="space-y-3">
-                          <h1 className="text-gray-500">Giới tinh</h1>
+                          <h1 className="text-gray-500 space-x-3">
+                            <span>Giới tinh</span>
+                            <span className="text-red-700">*</span>
+                          </h1>
                           <div className="space-x-10">
                             <label className="space-x-3">
                               <Field type="radio" name="gioiTinh" value="Nam" />
@@ -156,24 +161,49 @@ export default function AddNhanKhauModel({ addNhanKhau }) {
                         <Input
                           label="Quan hệ với chủ hộ"
                           name="quanHeVoiChuHo"
+                          required={true}
                         />
                       </div>
                       <div className="grid grid-cols-9 gap-10">
                         <div className="col-span-3">
-                          <Input label="Nguyên quán" name="nguyenQuan" />
+                          <Input
+                            label="Nguyên quán"
+                            name="nguyenQuan"
+                            required={true}
+                          />
                         </div>
                         <div className="col-span-2">
-                          <Input label="Dân tộc" name="danToc" />
+                          <Input
+                            label="Dân tộc"
+                            name="danToc"
+                            required={true}
+                          />
                         </div>
                         <div className="col-span-2">
-                          <Input label="Tôn giáo" name="tonGiao" />
+                          <Input
+                            label="Tôn giáo"
+                            name="tonGiao"
+                            required={true}
+                          />
                         </div>
                         <div className="col-span-2">
-                          <Input label="Quốc tịch" name="quocTich" />
+                          <Input
+                            label="Quốc tịch"
+                            name="quocTich"
+                            required={true}
+                          />
                         </div>
                       </div>
-                      <Input label="Địa chỉ thường trú" name="noiThuongTru" />
-                      <Input label="Địa chỉ hiện tại" name="diaChiHienTai" />
+                      <Input
+                        label="Địa chỉ thường trú"
+                        name="noiThuongTru"
+                        required={true}
+                      />
+                      <Input
+                        label="Địa chỉ hiện tại"
+                        name="diaChiHienTai"
+                        required={true}
+                      />
                       <div className="grid grid-cols-9 gap-10">
                         <div className="col-span-2">
                           <Input
