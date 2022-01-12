@@ -80,7 +80,7 @@ export default function EditCuochopPage({ meeting, inviters }) {
                   method: "PUT",
                   body: {
                     ...values,
-                    thoiGian: moment(values.thoiGian + "Z").toISOString(),
+                    thoiGian: moment(values.thoiGian).toISOString(),
                     nguoiTao: session.user.name,
                   },
                   token: session.token,

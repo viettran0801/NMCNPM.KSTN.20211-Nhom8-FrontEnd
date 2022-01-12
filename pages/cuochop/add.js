@@ -78,7 +78,7 @@ export default function AddCuochopPage({ inviters }) {
                 method: "POST",
                 body: {
                   ...values,
-                  thoiGian: moment(values.thoiGian + "Z").toISOString(),
+                  thoiGian: moment(values.thoiGian).toISOString(),
                   nguoiTao: session.user.name,
                   hoKhaus: chuHoDaMoi,
                 },
