@@ -82,7 +82,7 @@ export default function EditNhanKhauPage({ nhanKhau }) {
                 </div>
                 <div className="space-y-3">
                   <h1 className="text-gray-500 space-x-3">
-                    <span>Giới tinh</span>
+                    <span>Giới tính</span>
                     <span className="text-red-700">*</span>
                   </h1>
                   <div className="space-x-10">
